@@ -495,9 +495,9 @@
                     </div>
 
                     <div class="pt-2 border-t border-white/10">
-                        <label class="block text-xs font-bold text-[#7C4DFF] mb-1">مفتاح Gemini AI لتصوير الوجبات (اختياري)</label>
-                        <input type="password" id="cfg-gemini" placeholder="AIzaSy..." class="w-full bg-[#050714] text-white text-xs p-3 rounded-xl border border-[#7C4DFF]/30 outline-none" dir="ltr">
-                        <p class="text-[11px] text-slate-400 mt-1">يُحفظ محلياً في جهازك لتشغيل تحليل الصور الحقيقي مجاناً.</p>
+                        <label class="block text-xs font-bold text-[#7C4DFF] mb-1">مفتاح Gemini AI لتصوير الوجبات (مُفعّل تلقائياً)</label>
+                        <input type="password" id="cfg-gemini" placeholder="مُفعّل تلقائياً - اتركه فارغاً أو ضع مفتاحاً بديلاً" class="w-full bg-[#050714] text-white text-xs p-3 rounded-xl border border-[#7C4DFF]/30 outline-none" dir="ltr">
+                        <p class="text-[11px] text-[#00E676] mt-1">✓ الذكاء الاصطناعي البصري نشط وجاهز على هذا الجهاز، وبياناتك محفوظة بشكل مستقل تماماً.</p>
                     </div>
 
                     <button onclick="saveProfileSettings()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00E5FF] to-[#00E676] text-[#03042e] font-extrabold text-sm shadow-lg shadow-cyan-500/20 active:scale-98 transition">
@@ -874,12 +874,24 @@
         };
 
         // 2. إدارة حالة التطبيق (State Management + LocalStorage)
-        const GEMINI_API = ""; // يمكن تركه فارغاً أو استخدام المفتاح من الإعدادات
+        const GEMINI_API = "AIzaSyBL4ufGbVmLK3z15vKJo-BuG2pZl7BnOgo";
+
+        // توليد معرّف فريد ومستقل لكل جهاز لضمان عدم تداخل البيانات وحفظ كل الأيام محلياً
+        function getDeviceStoragePrefix() {
+            let devId = localStorage.getItem('sp2_device_unique_id');
+            if (!devId) {
+                devId = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem('sp2_device_unique_id', devId);
+            }
+            return `sp2_${devId}_`;
+        }
+
+        const STORAGE_PREFIX = getDeviceStoragePrefix();
 
         let state = {
             activePage: 'dashboard',
             selectedDate: new Date().toISOString().split('T')[0],
-            profile: JSON.parse(localStorage.getItem('sp2_profile')) || {
+            profile: JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'profile')) || {
                 username: 'MO',
                 calories: 2000,
                 protein: 150,
@@ -888,7 +900,7 @@
                 water: 3000,
                 geminiKey: ''
             },
-            days: JSON.parse(localStorage.getItem('sp2_days')) || {}
+            days: JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'days')) || {}
         };
 
         let parsedTemp = { nlp: [], vision: [] };
@@ -897,8 +909,12 @@
         let editingContext = null;
 
         function saveState() {
-            localStorage.setItem('sp2_profile', JSON.stringify(state.profile));
-            localStorage.setItem('sp2_days', JSON.stringify(state.days));
+            try {
+                localStorage.setItem(STORAGE_PREFIX + 'profile', JSON.stringify(state.profile));
+                localStorage.setItem(STORAGE_PREFIX + 'days', JSON.stringify(state.days));
+            } catch (e) {
+                showToast('تنبيه: مساحة التخزين المحلية ممتلئة', 'alert-circle');
+            }
         }
 
         function getDayData(dateStr = state.selectedDate) {
