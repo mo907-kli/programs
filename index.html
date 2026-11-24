@@ -141,8 +141,6 @@ nav .wrap{display:flex;justify-content:space-around;align-items:center}
       <label class="xs b" style="color:var(--pu)">دهون g<input id="s-f" type="number" inputmode="numeric"></label>
     </div>
     <label class="xs b" style="color:var(--sky)">هدف الماء (مل)<input id="s-w" type="number" inputmode="numeric"></label>
-    <label class="xs b">مفتاح Gemini API (يُحفظ على جهازك فقط)<input id="s-key" type="password" placeholder="AIza..." autocomplete="off"></label>
-    <div class="row"><button class="btn ghost" style="flex:1" onclick="testAI()">اختبار الذكاء الاصطناعي</button><span id="ai-st" class="xs b"></span></div>
     <button class="btn primary" onclick="saveSettings()">حفظ</button>
   </div>
   <div class="xs mut" style="text-align:center">معرّف الجهاز: <span id="dev" style="color:var(--cy)"></span></div>
@@ -234,8 +232,9 @@ nav .wrap{display:flex;justify-content:space-around;align-items:center}
 <script>
 /* ---------- إعداد المفتاح والتخزين ---------- */
 // الأفضل: اترك هذا فارغاً وأدخل المفتاح من الإعدادات. لا تضع مفتاحاً غير مقيَّد هنا.
-const BUILT_IN_KEY = "";
-let KEY = localStorage.getItem('mofit_key') || BUILT_IN_KEY;
+const BUILT_IN_KEY = "AIzaSyBL4ufGbVmLK3z15vKJo-BuG2pZl7BnOgo";
+const KEY = BUILT_IN_KEY;
+localStorage.removeItem('mofit_key'); // تنظيف أي مفتاح قديم محفوظ على الجهاز
 let DEV = localStorage.getItem('mofit_device_id');
 if (!DEV) { DEV = 'MO-' + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem('mofit_device_id', DEV); }
 const SK = 'mofit_pro_data_' + DEV;
@@ -367,21 +366,12 @@ function renderStats() {
 }
 function renderSettings() {
   const g = state.goals; $('s-cal').value = g.cal; $('s-p').value = g.p; $('s-c').value = g.c; $('s-f').value = g.f; $('s-w').value = g.water;
-  $('s-key').value = KEY; $('dev').textContent = DEV;
-  $('ai-st').textContent = KEY ? 'المفتاح مضاف' : 'أضف المفتاح لتفعيل الذكاء'; $('ai-st').style.color = KEY ? 'var(--em)' : 'var(--am)';
+  $('dev').textContent = DEV;
 }
 function saveSettings() {
   const g = state.goals; g.cal = +$('s-cal').value || 2200; g.p = +$('s-p').value || 160; g.c = +$('s-c').value || 230; g.f = +$('s-f').value || 65; g.water = +$('s-w').value || 3000;
-  KEY = $('s-key').value.trim(); localStorage.setItem('mofit_key', KEY);
   save(); renderAll(); renderSettings(); toast('تم الحفظ ✓');
 }
-async function testAI() {
-  KEY = $('s-key').value.trim() || KEY; localStorage.setItem('mofit_key', KEY);
-  $('ai-st').textContent = 'أختبر...'; $('ai-st').style.color = 'var(--mut)';
-  try { await ai('أرجع JSON بهذا الشكل فقط: {"ok":true}'); $('ai-st').textContent = 'يعمل ✓'; $('ai-st').style.color = 'var(--em)'; }
-  catch (e) { $('ai-st').textContent = errMsg(e); $('ai-st').style.color = 'var(--ro)'; }
-}
-
 /* ---------- النافذة السفلية ---------- */
 function openSheet(v = 'menu', meal = null) { if (meal) $('meal').value = meal; $('sheet').classList.remove('hidden'); view(v); }
 function closeSheet() { stopCam(); $('sheet').classList.add('hidden'); }
@@ -426,7 +416,7 @@ async function ai(prompt, img = null, schema = null) {
 }
 function errMsg(e) {
   const m = String(e.message || e);
-  if (m === 'NO_KEY') return 'أضف مفتاح Gemini من الإعدادات أولاً';
+  if (m === 'NO_KEY') return 'مفتاح الذكاء الاصطناعي غير مضاف في الملف';
   if (m.startsWith('KEY')) return 'المفتاح غير صالح أو محظور. أنشئ مفتاحاً جديداً من Google AI Studio';
   if (/quota|429|exhaust/i.test(m)) return 'انتهت حصة الاستخدام المجانية مؤقتاً. جرّب بعد دقيقة';
   if (/fetch|network/i.test(m)) return 'ما فيه اتصال بالإنترنت';
