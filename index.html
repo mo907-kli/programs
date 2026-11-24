@@ -1,1471 +1,592 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="dark">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MO FIT PRO" />
-  <meta name="theme-color" content="#03042e" />
-  <title>MO FIT PRO | حاسبة السعرات الذكية</title>
-
-  <!-- الخطوط العربية الفاخرة -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- مكتبة قراءة الباركود -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Cairo', 'sans-serif'] },
-          colors: {
-            navy: { 950: '#02031a', 900: '#03042e', 800: '#080a45', 700: '#101466' },
-            neon: { cyan: '#00f5d4', purple: '#9b5de5', emerald: '#10b981', amber: '#f59e0b', rose: '#f43f5e' }
-          }
-        }
-      }
-    };
-  </script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100dvh;
-      background: radial-gradient(circle at top right, #0d1054 0%, #03042e 45%, #02031a 100%);
-      color: #ffffff;
-      font-family: 'Cairo', sans-serif;
-      overflow-x: hidden;
-      overscroll-behavior-y: none;
-    }
-
-    .glass-card {
-      background: rgba(13, 17, 68, 0.65);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    }
-
-    .glass-nav {
-      background: rgba(5, 7, 36, 0.88);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-    }
-
-    .bottom-sheet-container {
-      height: 100dvh;
-      max-height: 100dvh;
-      padding-bottom: max(28px, env(safe-area-inset-bottom));
-    }
-
-    .bottom-sheet-body {
-      max-height: calc(100dvh - 85px);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: calc(90px + env(safe-area-inset-bottom));
-    }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    .ring-progress {
-      transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-    }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      background: rgba(255,255,255,0.12);
-      height: 8px;
-      border-radius: 999px;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #00f5d4;
-      box-shadow: 0 0 12px rgba(0, 245, 212, 0.6);
-      cursor: pointer;
-    }
-
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 18px rgba(0, 245, 212, 0.35); }
-      50% { box-shadow: 0 0 32px rgba(155, 93, 229, 0.6); }
-    }
-    .fab-glow { animation: pulseGlow 3s infinite; }
-
-    /* تنسيق قارئ الباركود */
-    #barcode-reader video {
-      border-radius: 16px !important;
-      object-fit: cover !important;
-      width: 100% !important;
-      max-height: 240px !important;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MO FIT PRO">
+<meta name="theme-color" content="#03042e">
+<title>MO FIT PRO | حاسبة السعرات الذكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--cy:#00f5d4;--pu:#9b5de5;--em:#34d399;--am:#fbbf24;--ro:#fb7185;--sky:#38bdf8;--mut:#94a3b8;--line:rgba(255,255,255,.1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{min-height:100dvh;background:radial-gradient(circle at top right,#0d1054,#03042e 45%,#02031a) fixed;color:#fff;font:500 15px/1.55 Cairo,sans-serif;padding-bottom:110px;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer;-webkit-user-select:none;user-select:none}
+button:active{transform:scale(.96)}
+input,textarea,select{font-size:16px;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:11px 14px;width:100%;-webkit-user-select:text;user-select:text}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--cy);outline-offset:0}
+select option{background:#03042e}
+.hidden{display:none!important}
+.wrap{max-width:460px;margin:0 auto;padding:0 16px}
+.card{background:linear-gradient(160deg,rgba(22,28,100,.7),rgba(10,13,56,.7));border:1px solid var(--line);border-radius:24px;padding:18px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.col{display:flex;flex-direction:column;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.mut{color:var(--mut)}.xs{font-size:12.5px}.sm{font-size:14px}.b{font-weight:900}
+h2{margin:0;font-size:22px;font-weight:900}h3{margin:0;font-size:16px;font-weight:900}
+.btn{padding:13px 16px;border-radius:16px;font-weight:900;font-size:14.5px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px}
+.primary{background:linear-gradient(90deg,var(--cy),#00bbf9);color:#03042e}
+.violet{background:linear-gradient(90deg,var(--pu),#7b2cbf)}
+.ghost{background:rgba(255,255,255,.09);border:1px solid var(--line)}
+.danger{background:rgba(251,113,133,.15);color:var(--ro)}
+.ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.09);font-size:18px;flex-shrink:0}
+header{position:sticky;top:0;z-index:30;padding:max(12px,env(safe-area-inset-top)) 0 10px;background:rgba(3,4,46,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--cy),var(--pu));display:grid;place-items:center;font-weight:900;color:#03042e}
+#week{display:flex;gap:6px;padding:12px 0 4px;overflow-x:auto;scrollbar-width:none}
+#week::-webkit-scrollbar{display:none}
+.day{flex:1;min-width:48px;padding:8px 0;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut);font-weight:700}
+.day b{font-size:16px;color:#fff}.day.sel{background:linear-gradient(180deg,var(--cy),#00bbf9);color:#03042e;border:0}.day.sel b{color:#03042e}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--cy)}.day.sel .dot{background:#03042e}
+.ring{transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1),stroke .3s;transform:rotate(-90deg);transform-origin:50% 50%}
+.bar{height:7px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;border-radius:9px;transition:width .5s}
+.stat{background:rgba(255,255,255,.06);border-radius:16px;padding:10px 12px}
+.meal{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border-radius:16px;padding:12px}
+.item{background:rgba(255,255,255,.05);border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.item .n{font-weight:900;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{padding:6px 12px;border-radius:12px;background:rgba(0,245,212,.14);color:var(--cy);font-weight:900;font-size:13.5px}
+nav{position:fixed;bottom:0;inset-inline:0;z-index:40;background:rgba(5,7,36,.92);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid var(--line);padding:8px 0 max(10px,env(safe-area-inset-bottom))}
+nav .wrap{display:flex;justify-content:space-around;align-items:center}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--mut);font-size:12.5px;font-weight:700;padding:4px 10px;min-width:60px}
+.nb span{font-size:22px;line-height:1}.nb.on{color:var(--cy)}
+.fab{margin-top:-30px;width:58px;height:58px;border-radius:20px;background:linear-gradient(135deg,var(--cy),var(--pu));color:#03042e;font-size:32px;font-weight:900;display:grid;place-items:center;box-shadow:0 8px 28px rgba(0,245,212,.35)}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:flex-end}
+.sheet{width:100%;max-width:460px;margin:0 auto;background:#06083b;border-top:1px solid var(--line);border-radius:30px 30px 0 0;max-height:92dvh;display:flex;flex-direction:column}
+.sheet>.top{padding:12px 20px;border-bottom:1px solid var(--line)}
+.sheet>.body{padding:18px 20px max(40px,calc(env(safe-area-inset-bottom) + 30px));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.grab{width:40px;height:5px;background:rgba(255,255,255,.2);border-radius:9px;margin:0 auto 12px}
+.opt{display:flex;align-items:center;gap:14px;text-align:right;width:100%;padding:14px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.05)}
+.opt p{margin:2px 0 0;color:var(--mut);font-size:13px;font-weight:500}
+.spin{width:36px;height:36px;border:4px solid var(--cy);border-top-color:transparent;border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{padding:12px;border-radius:16px;background:rgba(251,113,133,.13);border:1px solid rgba(251,113,133,.3);color:#fecdd3;font-size:14px;text-align:center}
+.stepper{display:flex;gap:8px;align-items:center}.stepper button{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.1);font-size:20px;font-weight:900;flex-shrink:0}
+.stepper input{text-align:center;font-weight:900;font-size:20px;color:var(--cy)}
+#toast{position:fixed;top:max(70px,calc(env(safe-area-inset-top) + 56px));left:50%;transform:translateX(-50%);z-index:80;background:var(--cy);color:#03042e;font-weight:900;font-size:14px;padding:10px 18px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center}
+.chart{height:170px;display:flex;align-items:flex-end;gap:8px}
+.chart>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:12px;color:var(--mut)}
+.chart .tr{width:100%;max-width:28px;height:120px;background:rgba(255,255,255,.06);border-radius:10px 10px 0 0;display:flex;align-items:flex-end;overflow:hidden}
+.chart .tr i{width:100%;background:linear-gradient(0deg,var(--pu),var(--cy))}
+</style>
 </head>
-<body class="pb-28 select-none">
+<body>
+<header><div class="wrap row between">
+  <div class="row"><div class="logo">MO</div><div><h3 style="font-size:17px">MO FIT PRO</h3><div id="hdate" class="xs mut"></div></div></div>
+  <button class="ico" onclick="tab('settings')" aria-label="الإعدادات">⚙️</button>
+</div></header>
 
-  <!-- الشريط العلوي -->
-  <header class="sticky top-0 z-30 px-4 pt-3 pb-2 bg-[#03042e]/85 backdrop-blur-xl border-b border-white/5" style="padding-top: max(12px, env(safe-area-inset-top));">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#00f5d4] to-[#9b5de5] p-[1.5px]">
-          <div class="w-full h-full bg-[#03042e] rounded-2xl flex items-center justify-center font-black text-sm text-[#00f5d4]">
-            MO
-          </div>
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-base font-extrabold tracking-tight text-white">MO FIT PRO</h1>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#00f5d4]/15 text-[#00f5d4] font-bold border border-[#00f5d4]/30">100% مجاني</span>
-          </div>
-          <p id="header-date-label" class="text-[11px] text-slate-400 font-medium">اليوم</p>
-        </div>
+<main class="wrap" style="padding-top:6px">
+<div id="week"></div>
+
+<section id="t-home" class="col" style="margin-top:12px">
+  <div class="card">
+    <div class="row between"><div><div class="xs mut">ملخص اليوم</div><h2>توازن السعرات</h2></div>
+      <button class="pill" onclick="tab('diary')">السجل ‹</button></div>
+    <div class="row" style="gap:18px;margin:14px 0">
+      <div style="position:relative;width:140px;height:140px;flex-shrink:0">
+        <svg viewBox="0 0 120 120" width="140" height="140"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00f5d4"/><stop offset="1" stop-color="#9b5de5"/></linearGradient></defs>
+        <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="11"/>
+        <circle id="ring" class="ring" cx="60" cy="60" r="50" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span id="rem" style="font-size:30px;font-weight:900;line-height:1">0</span><span id="remL" class="xs mut">متبقي</span></div>
       </div>
-
-      <div class="flex items-center gap-2">
-        <button onclick="openInstallGuide()" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-slate-300 hover:text-[#00f5d4] active:scale-95 transition" title="تثبيت على الآيفون">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-        </button>
-        <button onclick="switchTab('settings')" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-slate-300 hover:text-[#00f5d4] active:scale-95 transition" title="الإعدادات">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        </button>
+      <div class="col" style="flex:1;gap:8px">
+        <div class="stat row between"><span class="xs mut">الهدف</span><b id="goal"></b></div>
+        <div class="stat row between"><span class="xs mut">المستهلك</span><b id="eaten" style="color:var(--cy)"></b></div>
+        <div class="stat row between"><span class="xs mut">الأصناف</span><b id="cnt" style="color:var(--pu)"></b></div>
       </div>
     </div>
-  </header>
-
-  <!-- المحتوى الرئيسي -->
-  <main class="max-w-md mx-auto px-4 pt-3 space-y-4">
-
-    <!-- شريط الأيام -->
-    <div id="week-strip" class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar py-1"></div>
-
-    <!-- ==================== 1. صفحة الرئيسية ==================== -->
-    <section id="tab-home" class="space-y-4">
-      
-      <!-- بطاقة حلقة السعرات والماكروز -->
-      <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
-        <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#9b5de5]/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-16 -right-16 w-40 h-40 bg-[#00f5d4]/15 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <span class="text-xs text-slate-400 font-semibold">ملخص اليوم</span>
-            <h2 class="text-lg font-extrabold text-white">توازن السعرات</h2>
-          </div>
-          <button onclick="switchTab('diary')" class="text-xs font-bold text-[#00f5d4] bg-[#00f5d4]/10 border border-[#00f5d4]/25 px-3 py-1.5 rounded-xl active:scale-95 transition">
-            سجل الوجبات ←
-          </button>
-        </div>
-
-        <div class="flex items-center justify-between gap-4 my-2">
-          <!-- الحلقة الدائرية -->
-          <div class="relative w-36 h-36 flex items-center justify-center shrink-0">
-            <svg class="w-full h-full" viewBox="0 0 120 120">
-              <defs>
-                <linearGradient id="calGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#00f5d4" />
-                  <stop offset="100%" stop-color="#9b5de5" />
-                </linearGradient>
-              </defs>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="11" />
-              <circle id="cal-ring" class="ring-progress" cx="60" cy="60" r="50" fill="none" stroke="url(#calGrad)" stroke-width="11" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" />
-            </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span id="cal-remaining" class="text-2xl font-black text-white leading-none">2200</span>
-              <span class="text-[11px] text-slate-400 mt-1 font-semibold">متبقي</span>
-            </div>
-          </div>
-
-          <!-- إحصائيات سريعة -->
-          <div class="flex-1 space-y-2.5">
-            <div class="bg-white/5 rounded-2xl p-2.5 border border-white/5 flex items-center justify-between">
-              <span class="text-xs text-slate-400">الهدف</span>
-              <span id="cal-goal-display" class="text-sm font-extrabold text-white">2200 <small class="text-[10px] text-slate-400">سعرة</small></span>
-            </div>
-            <div class="bg-white/5 rounded-2xl p-2.5 border border-white/5 flex items-center justify-between">
-              <span class="text-xs text-slate-400">المستهلك</span>
-              <span id="cal-consumed-display" class="text-sm font-extrabold text-[#00f5d4]">0 <small class="text-[10px] text-slate-400">سعرة</small></span>
-            </div>
-            <div class="bg-white/5 rounded-2xl p-2.5 border border-white/5 flex items-center justify-between">
-              <span class="text-xs text-slate-400">عدد الوجبات</span>
-              <span id="meals-count-display" class="text-sm font-extrabold text-[#9b5de5]">0 أصناف</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- أشرطة الماكروز -->
-        <div class="grid grid-cols-3 gap-2.5 mt-4 pt-3 border-t border-white/10">
-          <div class="bg-white/[0.04] rounded-2xl p-2.5 text-center">
-            <div class="text-[11px] text-emerald-400 font-bold mb-1">البروتين</div>
-            <div class="text-sm font-black text-white"><span id="macro-p-val">0</span><span class="text-[10px] text-slate-400">/<span id="macro-p-goal">160</span>g</span></div>
-            <div class="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
-              <div id="macro-p-bar" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div class="bg-white/[0.04] rounded-2xl p-2.5 text-center">
-            <div class="text-[11px] text-amber-400 font-bold mb-1">الكارب</div>
-            <div class="text-sm font-black text-white"><span id="macro-c-val">0</span><span class="text-[10px] text-slate-400">/<span id="macro-c-goal">230</span>g</span></div>
-            <div class="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
-              <div id="macro-c-bar" class="h-full bg-amber-400 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div class="bg-white/[0.04] rounded-2xl p-2.5 text-center">
-            <div class="text-[11px] text-purple-400 font-bold mb-1">الدهون</div>
-            <div class="text-sm font-black text-white"><span id="macro-f-val">0</span><span class="text-[10px] text-slate-400">/<span id="macro-f-goal">65</span>g</span></div>
-            <div class="w-full h-1.5 bg-white/10 rounded-full mt-1.5 overflow-hidden">
-              <div id="macro-f-bar" class="h-full bg-purple-400 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- اختصارات الإدخال الذكي السريع -->
-      <div class="grid grid-cols-3 gap-2.5">
-        <button onclick="openActionModal('photo')" class="glass-card rounded-2xl p-3.5 flex flex-col items-center text-center gap-2 active:scale-95 transition border border-[#9b5de5]/30 hover:border-[#9b5de5]">
-          <div class="w-10 h-10 rounded-xl bg-[#9b5de5]/20 text-[#c084fc] flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </div>
-          <span class="text-xs font-extrabold text-white">صوّر وجبتك</span>
-        </button>
-
-        <button onclick="openActionModal('barcode')" class="glass-card rounded-2xl p-3.5 flex flex-col items-center text-center gap-2 active:scale-95 transition border border-[#00f5d4]/30 hover:border-[#00f5d4]">
-          <div class="w-10 h-10 rounded-xl bg-[#00f5d4]/20 text-[#00f5d4] flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-          </div>
-          <span class="text-xs font-extrabold text-white">باركود ومنتجات</span>
-        </button>
-
-        <button onclick="openActionModal('text')" class="glass-card rounded-2xl p-3.5 flex flex-col items-center text-center gap-2 active:scale-95 transition border border-emerald-400/30 hover:border-emerald-400">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          </div>
-          <span class="text-xs font-extrabold text-white">اكتب بالغرام</span>
-        </button>
-      </div>
-
-      <!-- متتبع شرب الماء -->
-      <div class="glass-card rounded-3xl p-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-400 text-xl">
-            💧
-          </div>
-          <div>
-            <h3 class="text-sm font-extrabold text-white">شرب الماء</h3>
-            <p class="text-xs text-slate-400"><span id="water-val" class="text-sky-400 font-bold">0</span> / <span id="water-goal-val">3000</span> مل</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="changeWater(-250)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-lg active:scale-90 transition">-</button>
-          <button onclick="changeWater(250)" class="px-3.5 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 text-sky-300 font-extrabold text-xs active:scale-90 transition">+ 250 مل</button>
-        </div>
-      </div>
-
-      <!-- ملخص سريع للوجبات الأربع -->
-      <div class="glass-card rounded-3xl p-4 space-y-2.5">
-        <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-extrabold text-white">توزيع الوجبات اليوم</h3>
-          <button onclick="switchTab('diary')" class="text-xs text-slate-400 hover:text-white">التفاصيل الكاملة</button>
-        </div>
-        <div id="home-meals-summary" class="space-y-2"></div>
-      </div>
-
-    </section>
-
-    <!-- ==================== 2. صفحة يومي (سجل الوجبات) ==================== -->
-    <section id="tab-diary" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-black text-white">سجل يومي</h2>
-          <p class="text-xs text-slate-400">أضف أو عدّل وزن كل صنف بالغرام بدقة</p>
-        </div>
-        <button onclick="openActionModal('text')" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#00f5d4] to-[#00bbf9] text-[#03042e] font-extrabold text-xs shadow-lg active:scale-95 transition">
-          + إضافة سريعة
-        </button>
-      </div>
-
-      <div id="diary-meals-container" class="space-y-3.5"></div>
-    </section>
-
-    <!-- ==================== 3. صفحة الإحصائيات ==================== -->
-    <section id="tab-stats" class="hidden space-y-4">
-      <div>
-        <h2 class="text-xl font-black text-white">الإحصائيات الأسبوعية</h2>
-        <p class="text-xs text-slate-400">متابعة التزامك بالسعرات والبروتين خلال 7 أيام</p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="glass-card rounded-3xl p-4">
-          <span class="text-xs text-slate-400">متوسط السعرات</span>
-          <div id="stat-avg-cal" class="text-2xl font-black text-[#00f5d4] mt-1">0</div>
-          <span class="text-[11px] text-slate-400">سعرة / يوم</span>
-        </div>
-        <div class="glass-card rounded-3xl p-4">
-          <span class="text-xs text-slate-400">متوسط البروتين</span>
-          <div id="stat-avg-pro" class="text-2xl font-black text-emerald-400 mt-1">0g</div>
-          <span class="text-[11px] text-slate-400">بروتين / يوم</span>
-        </div>
-      </div>
-
-      <div class="glass-card rounded-3xl p-5">
-        <h3 class="text-sm font-extrabold text-white mb-4">مخطط السعرات (آخر 7 أيام)</h3>
-        <div id="stats-chart" class="h-44 flex items-end justify-between gap-2 pt-4"></div>
-      </div>
-    </section>
-
-    <!-- ==================== 4. صفحة الإعدادات ==================== -->
-    <section id="tab-settings" class="hidden space-y-4">
-      <div>
-        <h2 class="text-xl font-black text-white">الإعدادات والأهداف</h2>
-        <p class="text-xs text-slate-400">بياناتك محفوظة بشكل مستقل تماماً على هذا الجهاز</p>
-      </div>
-
-      <div class="glass-card rounded-3xl p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1.5">هدف السعرات اليومي (سعرة)</label>
-          <input id="set-cal" type="number" class="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-3 text-white font-bold focus:outline-none focus:border-[#00f5d4]" />
-        </div>
-        <div class="grid grid-cols-3 gap-2.5">
-          <div>
-            <label class="block text-xs font-bold text-emerald-400 mb-1.5">البروتين (g)</label>
-            <input id="set-pro" type="number" class="w-full bg-white/5 border border-white/15 rounded-2xl px-3 py-3 text-white font-bold focus:outline-none focus:border-emerald-400" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-amber-400 mb-1.5">الكارب (g)</label>
-            <input id="set-carb" type="number" class="w-full bg-white/5 border border-white/15 rounded-2xl px-3 py-3 text-white font-bold focus:outline-none focus:border-amber-400" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-purple-400 mb-1.5">الدهون (g)</label>
-            <input id="set-fat" type="number" class="w-full bg-white/5 border border-white/15 rounded-2xl px-3 py-3 text-white font-bold focus:outline-none focus:border-purple-400" />
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-sky-400 mb-1.5">هدف الماء اليومي (مل)</label>
-          <input id="set-water" type="number" class="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-3 text-white font-bold focus:outline-none focus:border-sky-400" />
-        </div>
-
-        <button onclick="saveSettings()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00f5d4] to-[#9b5de5] text-[#03042e] font-black text-sm shadow-lg active:scale-95 transition">
-          حفظ الإعدادات
-        </button>
-      </div>
-
-      <div class="glass-card rounded-3xl p-4 space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-400">معرّف الجهاز المستقل:</span>
-          <span id="device-id-label" class="font-mono text-[#00f5d4] font-bold"></span>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-400">حالة الذكاء الاصطناعي:</span>
-          <span class="text-emerald-400 font-bold">متصل وجاهز 100%</span>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- شريط التنقل السفلي العائم -->
-  <nav class="fixed bottom-0 inset-x-0 z-40 glass-nav">
-    <div class="max-w-md mx-auto px-4 pt-2 flex items-center justify-around relative">
-      <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center gap-1 py-1 px-3 text-[#00f5d4]">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        <span class="text-[11px] font-extrabold">الرئيسية</span>
-      </button>
-
-      <button onclick="switchTab('diary')" id="nav-diary" class="nav-btn flex flex-col items-center gap-1 py-1 px-3 text-slate-400">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-        <span class="text-[11px] font-bold">يومي</span>
-      </button>
-
-      <!-- زر (+) المركزي -->
-      <button onclick="openActionModal('menu')" class="-mt-7 w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#00f5d4] to-[#9b5de5] text-[#03042e] flex items-center justify-center shadow-2xl fab-glow active:scale-90 transition">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-      </button>
-
-      <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center gap-1 py-1 px-3 text-slate-400">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        <span class="text-[11px] font-bold">الإحصائيات</span>
-      </button>
-
-      <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center gap-1 py-1 px-3 text-slate-400">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        <span class="text-[11px] font-bold">حسابي</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- ==================== النافذة المنبثقة الذكية (Bottom Sheet) ==================== -->
-  <div id="action-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex flex-col justify-end">
-    <div class="w-full max-w-md mx-auto bg-[#06083b] border-t border-white/15 rounded-t-[32px] shadow-2xl flex flex-col max-h-[92dvh]">
-      
-      <!-- شريط التحكم العلوي للنافذة -->
-      <div class="px-5 pt-3 pb-3 border-b border-white/10 shrink-0">
-        <div class="w-10 h-1.5 bg-white/20 rounded-full mx-auto mb-3"></div>
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-400 font-bold">إضافة إلى:</span>
-            <select id="target-meal-select" class="bg-white/10 border border-white/15 text-white text-xs font-extrabold rounded-xl px-3 py-2 focus:outline-none focus:border-[#00f5d4]">
-              <option value="breakfast" class="bg-[#03042e]">🍳 وجبة الفطور</option>
-              <option value="lunch" selected class="bg-[#03042e]">🍗 وجبة الغداء</option>
-              <option value="dinner" class="bg-[#03042e]">🥗 وجبة العشاء</option>
-              <option value="snack" class="bg-[#03042e]">🍎 وجبة خفيفة</option>
-            </select>
-          </div>
-
-          <button onclick="closeActionModal()" class="w-9 h-9 rounded-full bg-white/10 text-slate-300 flex items-center justify-center font-bold active:scale-90 transition">
-            ✕
-          </button>
-        </div>
-      </div>
-
-      <!-- محتوى النافذة القابل للتمرير -->
-      <div id="modal-scroll-area" class="p-5 overflow-y-auto space-y-4 flex-1" style="padding-bottom: max(45px, calc(env(safe-area-inset-bottom) + 35px));">
-
-        <!-- 1. القائمة الرئيسية للخيارات -->
-        <div id="modal-view-menu" class="space-y-3">
-          <h3 class="text-base font-black text-white mb-2">اختر طريقة حساب السعرات</h3>
-
-          <button onclick="switchModalView('photo')" class="w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-right border border-[#9b5de5]/40 active:scale-98 transition">
-            <div class="w-12 h-12 rounded-2xl bg-[#9b5de5]/20 text-[#c084fc] flex items-center justify-center text-2xl shrink-0">📸</div>
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-black text-white">المسح الذكي بالكاميرا</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#00f5d4]/15 text-[#00f5d4] font-bold">AI مجاني</span>
-              </div>
-              <p class="text-xs text-slate-400 mt-0.5">صوّر صحنك وسيقدر الذكاء الاصطناعي كل صنف بالغرام فوراً</p>
-            </div>
-          </button>
-
-          <button onclick="switchModalView('barcode')" class="w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-right border border-[#00f5d4]/40 active:scale-98 transition">
-            <div class="w-12 h-12 rounded-2xl bg-[#00f5d4]/20 text-[#00f5d4] flex items-center justify-center text-2xl shrink-0">🔍</div>
-            <div class="flex-1">
-              <span class="text-sm font-black text-white">الباركود ومنتجات السعودية</span>
-              <p class="text-xs text-slate-400 mt-0.5">امسح أو صوّر الباركود أو ابحث في أكثر من 75 منتجاً سعودياً</p>
-            </div>
-          </button>
-
-          <button onclick="switchModalView('text')" class="w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-right border border-emerald-400/40 active:scale-98 transition">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0">✍️</div>
-            <div class="flex-1">
-              <span class="text-sm font-black text-white">الحساب الدقيق بالكتابة</span>
-              <p class="text-xs text-slate-400 mt-0.5">مثال: 200 غرام صدور دجاج مشوي و 100 غرام رز أبيض</p>
-            </div>
-          </button>
-        </div>
-
-        <!-- 2. واجهة التصوير بالذكاء الاصطناعي -->
-        <div id="modal-view-photo" class="hidden space-y-4">
-          <button onclick="switchModalView('menu')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
-            → رجوع للقائمة
-          </button>
-
-          <div class="glass-card rounded-3xl p-4 text-center space-y-3 border border-[#9b5de5]/30">
-            <h3 class="text-base font-black text-white">تحليل صورة الوجبة تلقائياً</h3>
-            <p class="text-xs text-slate-400">بمجرد اختيار الصورة أو تصويرها سيبدأ التحليل الفوري</p>
-
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-              <label class="cursor-pointer py-3.5 px-3 rounded-2xl bg-gradient-to-r from-[#9b5de5] to-[#7b2cbf] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
-                <span>📸 كاميرا الآيفون</span>
-                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhotoUpload(event)" />
-              </label>
-
-              <label class="cursor-pointer py-3.5 px-3 rounded-2xl bg-white/10 border border-white/15 text-white font-extrabold text-xs flex items-center justify-center gap-2 active:scale-95 transition">
-                <span>🖼️ من الألبوم</span>
-                <input type="file" accept="image/*" class="hidden" onchange="handleMealPhotoUpload(event)" />
-              </label>
-            </div>
-          </div>
-
-          <!-- معاينة الصورة وحالة التحليل -->
-          <div id="photo-preview-box" class="hidden space-y-3">
-            <div class="relative rounded-2xl overflow-hidden border border-white/15 max-h-52">
-              <img id="photo-preview-img" src="" alt="معاينة الوجبة" class="w-full h-48 object-cover" />
-              <div id="photo-loading-overlay" class="hidden absolute inset-0 bg-[#03042e]/85 backdrop-blur-sm flex flex-col items-center justify-center gap-2 p-4 text-center">
-                <div class="w-9 h-9 border-4 border-[#00f5d4] border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-sm font-extrabold text-[#00f5d4]">جاري تحليل مكونات الصحن بالغرام...</span>
-                <span class="text-[11px] text-slate-300">يستغرق ثانيتين فقط</span>
-              </div>
-            </div>
-          </div>
-
-          <div id="photo-results-area" class="space-y-2.5"></div>
-        </div>
-
-        <!-- 3. واجهة الباركود والمنتجات السعودية -->
-        <div id="modal-view-barcode" class="hidden space-y-4">
-          <button onclick="stopBarcodeCamera(); switchModalView('menu')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
-            → رجوع للقائمة
-          </button>
-
-          <!-- أزرار تشغيل الكاميرا أو تصوير الباركود -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="startBarcodeCamera()" class="py-3 px-3 rounded-2xl bg-[#00f5d4] text-[#03042e] font-black text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition">
-              <span>📷 كاميرا مباشرة</span>
-            </button>
-
-            <label class="cursor-pointer py-3 px-3 rounded-2xl bg-[#9b5de5] text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition">
-              <span>📸 صوّر الباركود</span>
-              <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleBarcodeImageUpload(event)" />
-            </label>
-          </div>
-
-          <!-- حاوية الكاميرا المباشرة -->
-          <div id="barcode-camera-wrapper" class="hidden glass-card rounded-2xl p-3 space-y-2">
-            <div id="barcode-reader" class="w-full overflow-hidden rounded-xl"></div>
-            <button onclick="stopBarcodeCamera()" class="w-full py-2 rounded-xl bg-rose-500/20 text-rose-300 text-xs font-bold">إيقاف الكاميرا</button>
-          </div>
-
-          <!-- البحث الفوري برقم الباركود أو اسم المنتج السعودي -->
-          <div class="space-y-2">
-            <div class="flex gap-2">
-              <input id="barcode-search-input" type="text" oninput="filterSaudiProducts(this.value)" placeholder="اكتب رقم الباركود أو اسم المنتج (مثال: المراعي، برونتو، الوطنية...)" class="flex-1 bg-white/5 border border-white/15 rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#00f5d4]" />
-              <button onclick="searchBarcodeOnline()" class="px-4 rounded-2xl bg-white/10 border border-white/15 text-[#00f5d4] font-extrabold text-xs active:scale-95 transition">
-                بحث
-              </button>
-            </div>
-          </div>
-
-          <!-- بطاقة المنتج المختار لتحديد الغرامات -->
-          <div id="selected-product-card" class="hidden glass-card rounded-3xl p-4 border border-[#00f5d4]/40 space-y-3">
-            <div class="flex items-start justify-between gap-2">
-              <div>
-                <span id="sel-prod-brand" class="text-[10px] px-2 py-0.5 rounded-full bg-[#00f5d4]/15 text-[#00f5d4] font-bold">منتج سعودي</span>
-                <h4 id="sel-prod-name" class="text-sm font-black text-white mt-1">اسم المنتج</h4>
-              </div>
-              <button onclick="document.getElementById('selected-product-card').classList.add('hidden')" class="text-xs text-slate-400">✕</button>
-            </div>
-
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-slate-300 font-bold">الكمية التي تناولتها:</span>
-                <div class="flex items-center gap-1.5">
-                  <input id="sel-prod-grams-input" type="number" value="100" oninput="updateSelectedProductMacros(this.value)" class="w-20 bg-white/10 border border-white/20 rounded-xl px-2 py-1 text-center font-black text-[#00f5d4] text-sm" />
-                  <span class="text-slate-400 font-bold">غرام</span>
-                </div>
-              </div>
-              <input id="sel-prod-slider" type="range" min="5" max="600" step="5" value="100" oninput="updateSelectedProductMacros(this.value)" class="w-full" />
-            </div>
-
-            <div class="grid grid-cols-4 gap-2 text-center bg-black/25 rounded-2xl p-2.5">
-              <div>
-                <div class="text-[10px] text-slate-400">سعرات</div>
-                <div id="sel-prod-cal" class="text-sm font-black text-[#00f5d4]">0</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-slate-400">بروتين</div>
-                <div id="sel-prod-pro" class="text-sm font-black text-emerald-400">0g</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-slate-400">كارب</div>
-                <div id="sel-prod-carb" class="text-sm font-black text-amber-400">0g</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-slate-400">دهون</div>
-                <div id="sel-prod-fat" class="text-sm font-black text-purple-400">0g</div>
-              </div>
-            </div>
-
-            <button onclick="confirmAddSelectedProduct()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-[#00f5d4] to-[#00bbf9] text-[#03042e] font-black text-xs shadow-lg active:scale-95 transition">
-              + إضافة الوجبة إلى سجل اليوم
-            </button>
-          </div>
-
-          <!-- قائمة المنتجات السعودية -->
-          <div class="space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-slate-300">منتجات السوبرماركت السعودي (اختر للتحديد بالغرام):</span>
-              <span id="saudi-count-badge" class="text-[10px] text-[#00f5d4] font-bold"></span>
-            </div>
-            <div id="saudi-products-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
-          </div>
-        </div>
-
-        <!-- 4. واجهة التحليل بالكتابة -->
-        <div id="modal-view-text" class="hidden space-y-4">
-          <button onclick="switchModalView('menu')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
-            → رجوع للقائمة
-          </button>
-
-          <div class="glass-card rounded-3xl p-4 space-y-3 border border-emerald-400/30">
-            <h3 class="text-base font-black text-white">اكتب وجبتك بأي صيغة</h3>
-            <p class="text-xs text-slate-400">مثال: <span class="text-emerald-300 font-bold">صدور دجاج مشوي 200 غرام و رز أبيض 150 غرام و علبة زبادي المراعي</span></p>
-            <textarea id="meal-text-input" rows="3" placeholder="اكتب الأصناف والغرامات هنا..." class="w-full bg-white/5 border border-white/15 rounded-2xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"></textarea>
-
-            <button id="analyze-text-btn" onclick="analyzeMealText()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-[#00f5d4] text-[#03042e] font-black text-sm shadow-lg active:scale-95 transition">
-              احسب السعرات بدقة 100%
-            </button>
-          </div>
-
-          <div id="text-results-area" class="space-y-2.5"></div>
-        </div>
-
-      </div>
-    </div>
+    <div id="macros" class="g3" style="border-top:1px solid var(--line);padding-top:14px"></div>
   </div>
 
-  <!-- نافذة شرح التثبيت على الآيفون -->
-  <div id="install-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="w-full max-w-sm glass-card rounded-3xl p-6 space-y-4 border border-[#00f5d4]/30">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-black text-white">تثبيت التطبيق على الآيفون مجاناً</h3>
-        <button onclick="document.getElementById('install-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-white/10 text-slate-300">✕</button>
-      </div>
-      <ol class="space-y-3 text-xs text-slate-300 leading-relaxed list-decimal list-inside">
-        <li>افتح هذا الرابط في متصفح <strong class="text-white">Safari</strong> على الآيفون.</li>
-        <li>اضغط على زر <strong class="text-[#00f5d4]">المشاركة (Share)</strong> في أسفل الشاشة (المربع الذي يخرج منه سهم للأعلى).</li>
-        <li>انزل للأسفل واختر <strong class="text-white">إضافة إلى الصفحة الرئيسية (Add to Home Screen)</strong>.</li>
-        <li>اضغط <strong class="text-[#00f5d4]">إضافة (Add)</strong> وسيظهر التطبيق على شاشتك الرئيسية مجاناً للأبد.</li>
-      </ol>
-    </div>
+  <div class="g3">
+    <button class="card col" style="align-items:center;padding:14px 6px;gap:6px" onclick="openSheet('photo')"><span style="font-size:26px">📸</span><span class="sm b">صوّر وجبتك</span></button>
+    <button class="card col" style="align-items:center;padding:14px 6px;gap:6px" onclick="openSheet('barcode')"><span style="font-size:26px">🔍</span><span class="sm b">باركود ومنتجات</span></button>
+    <button class="card col" style="align-items:center;padding:14px 6px;gap:6px" onclick="openSheet('text')"><span style="font-size:26px">✍️</span><span class="sm b">اكتب بالغرام</span></button>
   </div>
 
-  <!-- إشعار Toast -->
-  <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-2xl bg-[#00f5d4] text-[#03042e] font-black text-xs shadow-2xl transition-all"></div>
+  <div class="card row between">
+    <div class="row"><div class="ico" style="background:rgba(56,189,248,.15)">💧</div><div><h3>شرب الماء</h3><div class="xs mut"><b id="w" style="color:var(--sky)">0</b> / <span id="wg"></span> مل</div></div></div>
+    <div class="row" style="gap:6px"><button class="ico" onclick="water(-250)" aria-label="أنقص">−</button><button class="pill" style="background:rgba(56,189,248,.18);color:var(--sky);padding:11px 14px" onclick="water(250)">+ 250 مل</button></div>
+  </div>
 
-  <script>
-    // ==========================================
-    // 1. إعدادات الذكاء الاصطناعي وعزل الجهاز
-    // ==========================================
-    const GEMINI_API_KEY = "AIzaSyBL4ufGbVmLK3z15vKJo-BuG2pZl7BnOgo";
+  <div class="card col"><h3>الوجبات اليوم</h3><div id="hmeals" class="col" style="gap:8px"></div></div>
+</section>
 
-    // توليد معرّف مستقل لكل جهاز لضمان عدم تداخل البيانات بين الجوالات
-    let DEVICE_ID = localStorage.getItem('mofit_device_id');
-    if (!DEVICE_ID) {
-      DEVICE_ID = 'MO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-      localStorage.setItem('mofit_device_id', DEVICE_ID);
-    }
-    const STORAGE_KEY = `mofit_pro_data_${DEVICE_ID}`;
+<section id="t-diary" class="hidden col" style="margin-top:12px">
+  <div><h2>سجل يومي</h2><div class="xs mut">اضغط على الوزن لتعديله والسعرات تتحدث تلقائياً</div></div>
+  <div id="dmeals" class="col"></div>
+</section>
 
-    // ==========================================
-    // 2. قاعدة بيانات شاملة للمنتجات السعودية (لكل 100 غرام)
-    // ==========================================
-    const SAUDI_PRODUCTS = [
-      { barcode: "6281007041010", brand: "المراعي", name: "حليب طازج كامل الدسم", cal: 62, p: 3.1, c: 4.8, f: 3.4, defaultG: 200 },
-      { barcode: "6281007041027", brand: "المراعي", name: "حليب طازج قليل الدسم", cal: 46, p: 3.2, c: 4.9, f: 1.5, defaultG: 200 },
-      { barcode: "6281007041034", brand: "المراعي", name: "حليب بروتين شوكولاتة", cal: 75, p: 8.5, c: 7.2, f: 1.2, defaultG: 330 },
-      { barcode: "6281007022118", brand: "المراعي", name: "زبادي طازج كامل الدسم", cal: 61, p: 3.5, c: 4.7, f: 3.2, defaultG: 170 },
-      { barcode: "6281007022125", brand: "المراعي", name: "زبادي يوناني سادة", cal: 95, p: 10.0, c: 4.0, f: 4.2, defaultG: 160 },
-      { barcode: "6281007035118", brand: "المراعي", name: "لبن طازج كامل الدسم", cal: 58, p: 3.0, c: 4.5, f: 3.0, defaultG: 200 },
-      { barcode: "6281007055109", brand: "المراعي", name: "جبنة فيتا بيضاء", cal: 245, p: 14.0, c: 3.5, f: 19.5, defaultG: 50 },
-      { barcode: "6281007055208", brand: "المراعي", name: "شرائح جبن برجر شيدر", cal: 290, p: 17.5, c: 5.0, f: 22.0, defaultG: 40 },
-      { barcode: "6281034001018", brand: "نادك", name: "حليب نادك طازج كامل الدسم", cal: 61, p: 3.1, c: 4.7, f: 3.3, defaultG: 200 },
-      { barcode: "6281034002053", brand: "نادك", name: "زبادي يوناني نادك بروتين", cal: 88, p: 10.5, c: 3.8, f: 3.2, defaultG: 160 },
-      { barcode: "6281034009113", brand: "نادك", name: "زيت زيتون الجوف بكر ممتاز", cal: 884, p: 0, c: 0, f: 100, defaultG: 15 },
-      { barcode: "6281018001010", brand: "الصافي", name: "حليب الصافي طازج", cal: 62, p: 3.1, c: 4.8, f: 3.4, defaultG: 200 },
-      { barcode: "6281018004127", brand: "الصافي", name: "لبن أكتيفيا طازج", cal: 55, p: 3.2, c: 4.6, f: 2.6, defaultG: 200 },
-      { barcode: "6281063001102", brand: "دواجن الوطنية", name: "صدور دجاج طازجة بدون عظم", cal: 120, p: 23.0, c: 0, f: 2.6, defaultG: 200 },
-      { barcode: "6281063004219", brand: "دواجن الوطنية", name: "شاورما دجاج متبلة", cal: 147, p: 19.5, c: 1.0, f: 8.8, defaultG: 200 },
-      { barcode: "6281007201100", brand: "اليوم (المراعي)", name: "صدور دجاج فيليه طازج", cal: 118, p: 23.5, c: 0, f: 2.4, defaultG: 200 },
-      { barcode: "6281007202206", brand: "اليوم (المراعي)", name: "برجر دجاج مشوي", cal: 185, p: 17.0, c: 6.5, f: 10.0, defaultG: 120 },
-      { barcode: "6281007101103", brand: "لوزين", name: "خبز توست أبيض", cal: 265, p: 8.5, c: 49.0, f: 3.2, defaultG: 60 },
-      { barcode: "6281007101110", brand: "لوزين", name: "خبز توست بر (نخالة)", cal: 245, p: 9.5, c: 44.0, f: 3.0, defaultG: 60 },
-      { barcode: "6281007103305", brand: "لوزين", name: "خبز تورتيلا أبيض", cal: 295, p: 8.0, c: 51.0, f: 6.5, defaultG: 80 },
-      { barcode: "6281101501108", brand: "برونتو", name: "رقائق تورتيلا بالدقيق الأسمر", cal: 290, p: 9.0, c: 53.0, f: 5.0, defaultG: 80 },
-      { barcode: "6281101501115", brand: "برونتو", name: "خبز تورتيلا بروتين", cal: 260, p: 16.0, c: 38.0, f: 4.5, defaultG: 80 },
-      { barcode: "6281011001107", brand: "هرفي", name: "خبز برجر بالسمسم", cal: 275, p: 9.0, c: 50.0, f: 4.0, defaultG: 75 },
-      { barcode: "6281011002203", brand: "هرفي", name: "خبز تورتيلا بر", cal: 285, p: 8.8, c: 49.0, f: 5.5, defaultG: 80 },
-      { barcode: "6281022001014", brand: "ندى", name: "حليب ندى بروتين فانيليا", cal: 72, p: 8.2, c: 7.0, f: 1.1, defaultG: 330 },
-      { barcode: "6281022001021", brand: "ندى", name: "حليب ندى بروتين شوكولاتة", cal: 76, p: 8.2, c: 7.8, f: 1.2, defaultG: 330 },
-      { barcode: "6281022005104", brand: "ندى", name: "زبادي يوناني ندى سادة", cal: 92, p: 10.2, c: 3.9, f: 3.8, defaultG: 160 },
-      { barcode: "6281015001109", brand: "السعودية (سدافكو)", name: "حليب السعودية طويل الأجل", cal: 63, p: 3.1, c: 4.8, f: 3.5, defaultG: 200 },
-      { barcode: "6281015004407", brand: "السعودية (سدافكو)", name: "معجون طماطم السعودية", cal: 82, p: 4.2, c: 15.0, f: 0.5, defaultG: 30 },
-      { barcode: "6281055001101", brand: "أبو كاس", name: "أرز بسمتي أبيض (مطبوخ)", cal: 130, p: 2.7, c: 28.2, f: 0.3, defaultG: 150 },
-      { barcode: "6281055001118", brand: "أبو كاس", name: "أرز بسمتي أبيض (نيء/جاف)", cal: 356, p: 7.5, c: 78.0, f: 0.8, defaultG: 100 },
-      { barcode: "6281056001100", brand: "الوليمة", name: "أرز مزة بسمتي (مطبوخ)", cal: 135, p: 2.8, c: 29.0, f: 0.4, defaultG: 150 },
-      { barcode: "5010029000016", brand: "كويكر", name: "شوفان أبيض حبة كاملة", cal: 375, p: 13.2, c: 67.0, f: 6.5, defaultG: 60 },
-      { barcode: "6281031001101", brand: "قودي", name: "تونة تندرينا خفيفة بالماء", cal: 108, p: 24.0, c: 0, f: 1.0, defaultG: 100 },
-      { barcode: "6281031001125", brand: "قودي", name: "تونة قودي بزيت دوار الشمس (مصفاة)", cal: 185, p: 23.0, c: 0, f: 10.0, defaultG: 100 },
-      { barcode: "6281031005505", brand: "قودي", name: "زبدة الفول السوداني ناعمة", cal: 595, p: 25.0, c: 20.0, f: 50.0, defaultG: 30 },
-      { barcode: "6281031007707", brand: "قودي", name: "مكرونة قودي (مسلوقة)", cal: 155, p: 5.5, c: 30.5, f: 0.9, defaultG: 150 },
-      { barcode: "8004030044005", brand: "ريو ماري", name: "تونة بزيت الزيتون", cal: 220, p: 22.0, c: 0, f: 14.5, defaultG: 100 },
-      { barcode: "4902560170703", brand: "بوتان", name: "تونة لحم أبيض بالماء", cal: 110, p: 24.5, c: 0, f: 1.0, defaultG: 100 },
-      { barcode: "6281000000011", brand: "تمر سعودي", name: "تمر سكري القصيم", cal: 282, p: 2.4, c: 75.0, f: 0.4, defaultG: 40 },
-      { barcode: "6281000000028", brand: "تمر سعودي", name: "تمر عجوة المدينة", cal: 277, p: 2.2, c: 73.5, f: 0.3, defaultG: 40 },
-      { barcode: "6281000000035", brand: "تمر سعودي", name: "تمر خلاص الأحساء", cal: 280, p: 2.3, c: 74.0, f: 0.4, defaultG: 40 },
-      { barcode: "6281000000042", brand: "مخبز سعودي", name: "خبز صامولي أبيض", cal: 270, p: 8.5, c: 51.0, f: 3.0, defaultG: 70 },
-      { barcode: "6281000000059", brand: "مخبز سعودي", name: "خبز مفرود أبيض", cal: 265, p: 8.2, c: 52.0, f: 2.0, defaultG: 90 },
-      { barcode: "6281000000066", brand: "مخبز سعودي", name: "خبز مفرود بر", cal: 245, p: 9.2, c: 47.0, f: 2.2, defaultG: 90 },
-      { barcode: "6281000000073", brand: "طازج", name: "بيض كامل مسلوق أو مقلي بدون زيت", cal: 155, p: 13.0, c: 1.1, f: 11.0, defaultG: 100 },
-      { barcode: "6281000000080", brand: "طازج", name: "بياض البيض المسلوق", cal: 52, p: 11.0, c: 0.7, f: 0.2, defaultG: 100 },
-      { barcode: "6281000000097", brand: "لحوم طازجة", name: "لحم حاشي طازج قليل الدهن (مطبوخ)", cal: 175, p: 26.0, c: 0, f: 7.5, defaultG: 150 },
-      { barcode: "6281000000103", brand: "لحوم طازجة", name: "لحم غنم نعيمي (مطبوخ)", cal: 255, p: 24.0, c: 0, f: 17.5, defaultG: 150 },
-      { barcode: "6281000000110", brand: "أكلات سعودية", name: "كبسة دجاج سعودية (دجاج + رز)", cal: 175, p: 11.5, c: 21.0, f: 5.0, defaultG: 300 },
-      { barcode: "0712345678911", brand: "منتج تجريبي", name: "لوح بروتين شوكولاتة", cal: 360, p: 33.0, c: 35.0, f: 10.0, defaultG: 60 }
-    ];
+<section id="t-stats" class="hidden col" style="margin-top:12px">
+  <div><h2>آخر 7 أيام</h2><div class="xs mut">التزامك بالسعرات والبروتين</div></div>
+  <div class="g3" style="grid-template-columns:1fr 1fr">
+    <div class="card"><div class="xs mut">متوسط السعرات</div><div id="sa" class="b" style="font-size:28px;color:var(--cy)">0</div></div>
+    <div class="card"><div class="xs mut">متوسط البروتين</div><div id="sp" class="b" style="font-size:28px;color:var(--em)">0g</div></div>
+  </div>
+  <div class="card"><div id="chart" class="chart"></div></div>
+</section>
 
-    // ==========================================
-    // 3. إدارة الحالة والتخزين المحلي المستقل
-    // ==========================================
-    function getTodayStr() {
-      const d = new Date();
-      return d.toISOString().split('T')[0];
-    }
+<section id="t-settings" class="hidden col" style="margin-top:12px">
+  <div><h2>الإعدادات والأهداف</h2><div class="xs mut">بياناتك محفوظة على هذا الجهاز فقط</div></div>
+  <div class="card col">
+    <label class="xs b">هدف السعرات اليومي<input id="s-cal" type="number" inputmode="numeric"></label>
+    <div class="g3">
+      <label class="xs b" style="color:var(--em)">بروتين g<input id="s-p" type="number" inputmode="numeric"></label>
+      <label class="xs b" style="color:var(--am)">كارب g<input id="s-c" type="number" inputmode="numeric"></label>
+      <label class="xs b" style="color:var(--pu)">دهون g<input id="s-f" type="number" inputmode="numeric"></label>
+    </div>
+    <label class="xs b" style="color:var(--sky)">هدف الماء (مل)<input id="s-w" type="number" inputmode="numeric"></label>
+    <label class="xs b">مفتاح Gemini API (يُحفظ على جهازك فقط)<input id="s-key" type="password" placeholder="AIza..." autocomplete="off"></label>
+    <div class="row"><button class="btn ghost" style="flex:1" onclick="testAI()">اختبار الذكاء الاصطناعي</button><span id="ai-st" class="xs b"></span></div>
+    <button class="btn primary" onclick="saveSettings()">حفظ</button>
+  </div>
+  <div class="xs mut" style="text-align:center">معرّف الجهاز: <span id="dev" style="color:var(--cy)"></span></div>
+</section>
+</main>
 
-    let state = {
-      selectedDate: getTodayStr(),
-      goals: { cal: 2200, p: 160, c: 230, f: 65, water: 3000 },
-      days: {}
-    };
+<nav><div class="wrap">
+  <button class="nb on" id="n-home" onclick="tab('home')"><span>🏠</span>الرئيسية</button>
+  <button class="nb" id="n-diary" onclick="tab('diary')"><span>📒</span>يومي</button>
+  <button class="fab" onclick="openSheet('menu')" aria-label="إضافة">+</button>
+  <button class="nb" id="n-stats" onclick="tab('stats')"><span>📊</span>إحصائيات</button>
+  <button class="nb" id="n-settings" onclick="tab('settings')"><span>👤</span>حسابي</button>
+</div></nav>
 
-    function loadState() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (saved && saved.goals) {
-          state = { ...state, ...saved };
-          if (!state.selectedDate) state.selectedDate = getTodayStr();
-        }
-      } catch (e) { console.error(e); }
-    }
+<div id="sheet" class="ov hidden" onclick="if(event.target===this)closeSheet()">
+ <div class="sheet">
+  <div class="top"><div class="grab"></div>
+   <div class="row between"><div class="row"><span class="xs mut b">إضافة إلى</span>
+    <select id="meal" style="width:auto;padding:8px 12px;font-weight:900"><option value="breakfast">🍳 الفطور</option><option value="lunch" selected>🍗 الغداء</option><option value="dinner">🥗 العشاء</option><option value="snack">🍎 خفيفة</option></select></div>
+    <button class="ico" style="border-radius:50%" onclick="closeSheet()" aria-label="إغلاق">✕</button></div></div>
+  <div class="body col" id="sbody">
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
+   <div id="v-menu" class="col">
+    <h3>كيف تبي تحسب؟</h3>
+    <button class="opt" onclick="view('photo')"><div class="ico" style="background:rgba(155,93,229,.25)">📸</div><div><h3>صوّر الصحن</h3><p>الذكاء الاصطناعي يقدّر كل صنف بالغرام وتعدّل الوزن بنفسك</p></div></button>
+    <button class="opt" onclick="view('barcode')"><div class="ico" style="background:rgba(0,245,212,.2)">🔍</div><div><h3>باركود ومنتجات</h3><p>امسح الباركود أو ابحث باسم المنتج</p></div></button>
+    <button class="opt" onclick="view('text')"><div class="ico" style="background:rgba(52,211,153,.2)">✍️</div><div><h3>اكتب وجبتك</h3><p>مثال: 200 غرام دجاج مشوي و 150 غرام رز</p></div></button>
+   </div>
 
-    function getDayData(dateStr) {
-      if (!state.days[dateStr]) {
-        state.days[dateStr] = {
-          water: 0,
-          meals: { breakfast: [], lunch: [], dinner: [], snack: [] }
-        };
+   <div id="v-photo" class="hidden col">
+    <button class="xs mut" style="text-align:right" onclick="view('menu')">→ رجوع</button>
+    <div class="card col" style="padding:14px">
+     <h3>تحليل صورة الوجبة</h3>
+     <input id="hint" placeholder="ملاحظة اختيارية (مثال: الرز مطبوخ بسمن، الصحن كبير)">
+     <div class="g3" style="grid-template-columns:1fr 1fr">
+      <label class="btn violet">📸 الكاميرا<input type="file" accept="image/*" capture="environment" class="hidden" onchange="photo(event)"></label>
+      <label class="btn ghost">🖼️ الألبوم<input type="file" accept="image/*" class="hidden" onchange="photo(event)"></label>
+     </div>
+    </div>
+    <div id="pbox" class="hidden" style="position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line)">
+     <img id="pimg" alt="" style="width:100%;height:190px;object-fit:cover;display:block">
+     <div id="pload" class="hidden" style="position:absolute;inset:0;background:rgba(3,4,46,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><div class="spin"></div><b style="color:var(--cy)">أحلل الأصناف والأوزان...</b><span class="xs mut">5 إلى 15 ثانية</span></div>
+    </div>
+    <div id="pres" class="col"></div>
+   </div>
+
+   <div id="v-barcode" class="hidden col">
+    <button class="xs mut" style="text-align:right" onclick="stopCam();view('menu')">→ رجوع</button>
+    <div class="g3" style="grid-template-columns:1fr 1fr">
+     <button class="btn primary" onclick="startCam()">📷 كاميرا مباشرة</button>
+     <label class="btn violet">📸 صوّر الباركود<input type="file" accept="image/*" capture="environment" class="hidden" onchange="barPhoto(event)"></label>
+    </div>
+    <div id="camw" class="hidden card col" style="padding:10px"><div id="reader" style="border-radius:14px;overflow:hidden"></div><button class="btn danger" onclick="stopCam()">إيقاف الكاميرا</button></div>
+    <div class="row"><input id="bq" placeholder="رقم الباركود أو اسم المنتج" oninput="filt(this.value)"><button class="btn ghost" style="padding:0 18px" onclick="look(document.getElementById('bq').value)">بحث</button></div>
+    <div id="pc" class="hidden card col" style="border-color:rgba(0,245,212,.4)">
+     <div class="row between"><div><span id="pc-b" class="pill" style="font-size:12px;padding:3px 10px"></span><h3 id="pc-n" style="margin-top:4px"></h3></div><button onclick="document.getElementById('pc').classList.add('hidden')" class="mut">✕</button></div>
+     <div class="stepper"><button onclick="pstep(-10)">−</button><input id="pc-g" type="number" inputmode="numeric" oninput="pupd(this.value)"><button onclick="pstep(10)">+</button><span class="xs mut b">غرام</span></div>
+     <div id="pc-m" class="g4" style="background:rgba(0,0,0,.25);border-radius:16px;padding:10px"></div>
+     <button class="btn primary" onclick="padd()">إضافة إلى اليوم</button>
+    </div>
+    <div class="row between"><span class="xs b mut">منتجات شائعة (القيم تقريبية لكل 100غ)</span><span id="pcnt" class="xs" style="color:var(--cy)"></span></div>
+    <div id="plist" class="col" style="gap:8px"></div>
+   </div>
+
+   <div id="v-text" class="hidden col">
+    <button class="xs mut" style="text-align:right" onclick="view('menu')">→ رجوع</button>
+    <div class="card col" style="padding:14px">
+     <h3>اكتب وجبتك</h3>
+     <div class="xs mut">اذكر الغرامات إن عرفتها. بدونها أفترض حصة معتادة وأنبّهك.</div>
+     <textarea id="ttxt" rows="3" placeholder="صدور دجاج مشوي 200 غرام، رز أبيض 150 غرام، علبة زبادي"></textarea>
+     <button id="tbtn" class="btn primary" onclick="analyzeText()">احسب السعرات</button>
+    </div>
+    <div id="tres" class="col"></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div id="edit" class="ov hidden" style="justify-content:center;padding:16px" onclick="if(event.target===this)closeEdit()">
+ <div class="card col" style="max-width:420px;margin:0 auto;width:100%">
+  <h3 id="e-n"></h3>
+  <div class="stepper"><button onclick="estep(-10)">−</button><input id="e-g" type="number" inputmode="numeric" oninput="eprev()"><button onclick="estep(10)">+</button></div>
+  <div id="e-p" class="g4" style="background:rgba(0,0,0,.25);border-radius:16px;padding:10px"></div>
+  <div class="g3" style="grid-template-columns:1fr 1fr"><button class="btn ghost" onclick="closeEdit()">إلغاء</button><button class="btn primary" onclick="saveEdit()">حفظ</button></div>
+ </div>
+</div>
+<div id="toast" class="hidden"></div>
+
+<script>
+/* ---------- إعداد المفتاح والتخزين ---------- */
+// الأفضل: اترك هذا فارغاً وأدخل المفتاح من الإعدادات. لا تضع مفتاحاً غير مقيَّد هنا.
+const BUILT_IN_KEY = "";
+let KEY = localStorage.getItem('mofit_key') || BUILT_IN_KEY;
+let DEV = localStorage.getItem('mofit_device_id');
+if (!DEV) { DEV = 'MO-' + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem('mofit_device_id', DEV); }
+const SK = 'mofit_pro_data_' + DEV;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const r1 = x => Math.round(x * 10) / 10;
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); // توقيت الجهاز المحلي
+const today = () => ymd(new Date());
+
+let state = { selectedDate: today(), goals: { cal: 2200, p: 160, c: 230, f: 65, water: 3000 }, days: {} };
+try { const s = JSON.parse(localStorage.getItem(SK)); if (s && s.goals) state = { ...state, ...s, goals: { ...state.goals, ...s.goals } }; } catch (e) {}
+state.selectedDate = today();
+const save = () => localStorage.setItem(SK, JSON.stringify(state));
+function dayData(k) { return state.days[k] || (state.days[k] = { water: 0, meals: { breakfast: [], lunch: [], dinner: [], snack: [] } }); }
+
+const MEALS = {
+  breakfast: ['الفطور', '🍳', 'var(--am)'], lunch: ['الغداء', '🍗', 'var(--cy)'],
+  dinner: ['العشاء', '🥗', 'var(--pu)'], snack: ['وجبة خفيفة', '🍎', 'var(--em)']
+};
+const AR_DAYS = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+
+/* ---------- منتجات شائعة: [الشركة، الاسم، سعرات، بروتين، كارب، دهون، حصة] لكل 100غ ---------- */
+const PRODUCTS = [
+ ['المراعي','حليب كامل الدسم',62,3.1,4.8,3.4,200],['المراعي','حليب قليل الدسم',46,3.2,4.9,1.5,200],
+ ['المراعي','زبادي كامل الدسم',61,3.5,4.7,3.2,170],['المراعي','زبادي يوناني سادة',95,10,4,4.2,160],
+ ['المراعي','جبنة فيتا',245,14,3.5,19.5,50],['نادك','زيت زيتون',884,0,0,100,15],
+ ['الوطنية','صدور دجاج نيئة',120,23,0,2.6,200],['الوطنية','صدور دجاج مشوية',165,31,0,3.6,150],
+ ['لوزين','توست أبيض',265,8.5,49,3.2,60],['لوزين','توست بر',245,9.5,44,3,60],
+ ['برونتو','تورتيلا بروتين',260,16,38,4.5,80],['أبو كاس','رز بسمتي مطبوخ',130,2.7,28,0.3,150],
+ ['أبو كاس','رز بسمتي نيء',356,7.5,78,0.8,100],['كويكر','شوفان',375,13.2,67,6.5,60],
+ ['قودي','تونة بالماء',108,24,0,1,100],['قودي','تونة بالزيت (مصفاة)',185,23,0,10,100],
+ ['قودي','زبدة فول سوداني',595,25,20,50,30],['مكرونة','مكرونة مسلوقة',155,5.5,30.5,0.9,150],
+ ['تمر','تمر سكري',282,2.4,75,0.4,40],['تمر','تمر عجوة',277,2.2,73.5,0.3,40],
+ ['مخبز','صامولي أبيض',270,8.5,51,3,70],['مخبز','خبز مفرود بر',245,9.2,47,2.2,90],
+ ['بيض','بيض كامل مسلوق',155,13,1.1,11,100],['بيض','بياض بيض',52,11,0.7,0.2,100],
+ ['لحم','حاشي مطبوخ قليل الدهن',175,26,0,7.5,150],['لحم','غنم نعيمي مطبوخ',255,24,0,17.5,150],
+ ['أكلات','كبسة دجاج',175,11.5,21,5,300],['أكلات','فول مدمس',110,7.5,17,0.5,150]
+].map(a => ({ brand: a[0], name: a[1], cal: a[2], p: a[3], c: a[4], f: a[5], defaultG: a[6] }));
+
+/* ---------- التنقل والعرض ---------- */
+function tab(t) {
+  ['home', 'diary', 'stats', 'settings'].forEach(x => { $('t-' + x).classList.toggle('hidden', x !== t); $('n-' + x).classList.toggle('on', x === t); });
+  if (t === 'stats') renderStats(); if (t === 'settings') renderSettings();
+  window.scrollTo(0, 0);
+}
+function renderWeek() {
+  const w = $('week'); w.innerHTML = '';
+  for (let i = -5; i <= 1; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i); const k = ymd(d);
+    const b = document.createElement('button'); b.className = 'day' + (k === state.selectedDate ? ' sel' : '');
+    b.innerHTML = `<span class="xs">${AR_DAYS[d.getDay()]}</span><b>${d.getDate()}</b>${k === today() ? '<i class="dot"></i>' : '<i style="height:5px"></i>'}`;
+    b.onclick = () => { state.selectedDate = k; renderAll(); };
+    w.appendChild(b);
+  }
+  const sd = new Date(state.selectedDate + 'T12:00:00');
+  $('hdate').textContent = (state.selectedDate === today() ? 'اليوم • ' : '') + sd.toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+const sum = items => items.reduce((a, x) => ({ cal: a.cal + (+x.cal || 0), p: a.p + (+x.p || 0), c: a.c + (+x.c || 0), f: a.f + (+x.f || 0) }), { cal: 0, p: 0, c: 0, f: 0 });
+
+function renderAll() {
+  renderWeek();
+  const day = dayData(state.selectedDate), g = state.goals;
+  const all = Object.values(day.meals).flat(), t = sum(all);
+  const cal = Math.round(t.cal), over = cal > g.cal;
+  $('rem').textContent = over ? cal - g.cal : g.cal - cal;
+  $('remL').textContent = over ? 'زيادة' : 'متبقي';
+  $('rem').style.color = over ? 'var(--ro)' : '#fff';
+  $('ring').style.stroke = over ? 'var(--ro)' : 'url(#g)';
+  $('ring').style.strokeDashoffset = 314.16 * (1 - Math.min(1, cal / Math.max(1, g.cal)));
+  $('goal').textContent = g.cal; $('eaten').textContent = cal; $('cnt').textContent = all.length;
+  $('macros').innerHTML = [['p', 'بروتين', 'var(--em)'], ['c', 'كارب', 'var(--am)'], ['f', 'دهون', 'var(--pu)']].map(([k, n, col]) =>
+    `<div class="stat" style="text-align:center"><div class="xs b" style="color:${col}">${n}</div><div class="b">${r1(t[k])}<span class="xs mut">/${g[k]}g</span></div><div class="bar"><i style="width:${Math.min(100, t[k] / Math.max(1, g[k]) * 100)}%;background:${col}"></i></div></div>`).join('');
+  $('w').textContent = day.water; $('wg').textContent = g.water;
+  $('hmeals').innerHTML = Object.entries(MEALS).map(([k, m]) => {
+    const it = day.meals[k];
+    return `<div class="meal"><div class="row"><span style="font-size:22px">${m[1]}</span><div><div class="b sm">${m[0]}</div><div class="xs mut">${it.length} أصناف</div></div></div>
+    <div class="row"><b style="color:${m[2]}">${Math.round(sum(it).cal)} سعرة</b><button class="ico" style="width:36px;height:36px" onclick="openSheet('menu','${k}')">+</button></div></div>`;
+  }).join('');
+  $('dmeals').innerHTML = Object.entries(MEALS).map(([k, m]) => {
+    const it = day.meals[k], s = sum(it);
+    return `<div class="card col"><div class="row between" style="border-bottom:1px solid var(--line);padding-bottom:10px"><div class="row"><span style="font-size:26px">${m[1]}</span><div><h3>${m[0]}</h3><div class="xs mut">${Math.round(s.cal)} سعرة • ب ${r1(s.p)} • ك ${r1(s.c)} • د ${r1(s.f)}</div></div></div>
+    <button class="ico" style="color:var(--cy)" onclick="openSheet('menu','${k}')">+</button></div>
+    ${it.length ? it.map((x, i) => `<div class="item"><div style="min-width:0;flex:1"><div class="n">${esc(x.name)}</div><div class="xs mut"><b style="color:var(--cy)">${Math.round(x.cal)} سعرة</b> • ب ${x.p} • ك ${x.c} • د ${x.f}</div></div>
+    <div class="row" style="gap:6px;flex-shrink:0"><button class="pill" onclick="openEdit('${k}',${i})">${x.grams}g ✎</button><button class="ico danger" style="width:38px;height:38px" onclick="delItem('${k}',${i})" aria-label="حذف">🗑</button></div></div>`).join('')
+    : '<div class="xs mut" style="text-align:center;padding:8px">ما أضفت شي بعد. اضغط + للبدء</div>'}</div>`;
+  }).join('');
+}
+
+/* ---------- إضافة وتعديل وحذف ---------- */
+function addFood(meal, it) {
+  const g = Math.max(1, it.grams), per = it.per || { cal: it.cal / g * 100, p: it.p / g * 100, c: it.c / g * 100, f: it.f / g * 100 };
+  dayData(state.selectedDate).meals[meal].push({ name: it.name, grams: Math.round(g), per, cal: Math.round(it.cal), p: r1(it.p), c: r1(it.c), f: r1(it.f) });
+  save(); renderAll();
+}
+function delItem(m, i) {
+  const arr = dayData(state.selectedDate).meals[m], removed = arr.splice(i, 1)[0];
+  save(); renderAll(); toast('تم الحذف');
+}
+let ed = null;
+function perOf(x) { return x.per || { cal: x.cal / Math.max(1, x.grams) * 100, p: x.p / Math.max(1, x.grams) * 100, c: x.c / Math.max(1, x.grams) * 100, f: x.f / Math.max(1, x.grams) * 100 }; }
+function macroCells(c, p, cb, f) {
+  return `<div><div class="xs mut">سعرات</div><b style="color:var(--cy)">${Math.round(c)}</b></div><div><div class="xs mut">بروتين</div><b style="color:var(--em)">${r1(p)}g</b></div><div><div class="xs mut">كارب</div><b style="color:var(--am)">${r1(cb)}g</b></div><div><div class="xs mut">دهون</div><b style="color:var(--pu)">${r1(f)}g</b></div>`;
+}
+function openEdit(m, i) { const x = dayData(state.selectedDate).meals[m][i]; ed = { m, i }; $('e-n').textContent = x.name; $('e-g').value = x.grams; eprev(); $('edit').classList.remove('hidden'); }
+function closeEdit() { $('edit').classList.add('hidden'); }
+function eprev() { const x = dayData(state.selectedDate).meals[ed.m][ed.i], p = perOf(x), r = (+$('e-g').value || 0) / 100; $('e-p').innerHTML = macroCells(p.cal * r, p.p * r, p.c * r, p.f * r); }
+function estep(d) { $('e-g').value = Math.max(1, (+$('e-g').value || 0) + d); eprev(); }
+function saveEdit() {
+  const x = dayData(state.selectedDate).meals[ed.m][ed.i], g = +$('e-g').value; if (!(g > 0)) return toast('اكتب وزن صحيح');
+  const p = perOf(x), r = g / 100; x.per = p; x.grams = Math.round(g);
+  x.cal = Math.round(p.cal * r); x.p = r1(p.p * r); x.c = r1(p.c * r); x.f = r1(p.f * r);
+  save(); renderAll(); closeEdit(); toast('تم تحديث الوزن ✓');
+}
+function water(d) { const dd = dayData(state.selectedDate); dd.water = Math.max(0, dd.water + d); save(); renderAll(); }
+
+/* ---------- الإحصائيات والإعدادات ---------- */
+function renderStats() {
+  let sc = 0, sp = 0, n = 0; const ch = $('chart'); ch.innerHTML = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i); const day = state.days[ymd(d)];
+    const t = day ? sum(Object.values(day.meals).flat()) : { cal: 0, p: 0 };
+    if (t.cal > 0) { sc += t.cal; sp += t.p; n++; }
+    const h = Math.min(100, t.cal / Math.max(1, state.goals.cal) * 100);
+    ch.insertAdjacentHTML('beforeend', `<div><span>${t.cal > 0 ? Math.round(t.cal) : ''}</span><div class="tr"><i style="height:${h}%"></i></div><span>${AR_DAYS[d.getDay()]}</span></div>`);
+  }
+  $('sa').textContent = n ? Math.round(sc / n) : 0; $('sp').textContent = (n ? Math.round(sp / n) : 0) + 'g';
+}
+function renderSettings() {
+  const g = state.goals; $('s-cal').value = g.cal; $('s-p').value = g.p; $('s-c').value = g.c; $('s-f').value = g.f; $('s-w').value = g.water;
+  $('s-key').value = KEY; $('dev').textContent = DEV;
+  $('ai-st').textContent = KEY ? 'المفتاح مضاف' : 'أضف المفتاح لتفعيل الذكاء'; $('ai-st').style.color = KEY ? 'var(--em)' : 'var(--am)';
+}
+function saveSettings() {
+  const g = state.goals; g.cal = +$('s-cal').value || 2200; g.p = +$('s-p').value || 160; g.c = +$('s-c').value || 230; g.f = +$('s-f').value || 65; g.water = +$('s-w').value || 3000;
+  KEY = $('s-key').value.trim(); localStorage.setItem('mofit_key', KEY);
+  save(); renderAll(); renderSettings(); toast('تم الحفظ ✓');
+}
+async function testAI() {
+  KEY = $('s-key').value.trim() || KEY; localStorage.setItem('mofit_key', KEY);
+  $('ai-st').textContent = 'أختبر...'; $('ai-st').style.color = 'var(--mut)';
+  try { await ai('أرجع JSON بهذا الشكل فقط: {"ok":true}'); $('ai-st').textContent = 'يعمل ✓'; $('ai-st').style.color = 'var(--em)'; }
+  catch (e) { $('ai-st').textContent = errMsg(e); $('ai-st').style.color = 'var(--ro)'; }
+}
+
+/* ---------- النافذة السفلية ---------- */
+function openSheet(v = 'menu', meal = null) { if (meal) $('meal').value = meal; $('sheet').classList.remove('hidden'); view(v); }
+function closeSheet() { stopCam(); $('sheet').classList.add('hidden'); }
+function view(v) {
+  ['menu', 'photo', 'barcode', 'text'].forEach(x => $('v-' + x).classList.toggle('hidden', x !== v));
+  if (v === 'barcode') filt($('bq').value);
+  $('sbody').scrollTop = 0;
+}
+
+/* ---------- محرك Gemini ---------- */
+const MODELS = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+const N = { type: 'NUMBER' }, S = { type: 'STRING' };
+const SCHEMA = { type: 'OBJECT', required: ['items'], properties: { items: { type: 'ARRAY', items: { type: 'OBJECT',
+  required: ['name', 'grams', 'cal100', 'p100', 'c100', 'f100'],
+  properties: { name: S, grams: N, cal100: N, p100: N, c100: N, f100: N, confidence: N, note: S } } } } };
+
+async function ai(prompt, img = null, schema = null) {
+  if (!KEY) throw new Error('NO_KEY');
+  const parts = []; if (img) parts.push({ inlineData: { mimeType: 'image/jpeg', data: img } }); parts.push({ text: prompt });
+  let last;
+  for (const model of MODELS) for (let a = 0; a < 2; a++) {
+    try {
+      const gc = { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' };
+      if (schema) gc.responseSchema = schema;
+      if (model === MODELS[0]) gc.thinkingConfig = { thinkingBudget: 1024 };
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(KEY)}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }], generationConfig: gc }) });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({})), msg = e.error?.message || 'HTTP ' + r.status;
+        if (r.status === 403 || /API key/i.test(msg)) throw new Error('KEY: ' + msg);
+        last = new Error(msg);
+        if (r.status === 429 || r.status >= 500) { await sleep(900); continue; }
+        break;
       }
-      return state.days[dateStr];
-    }
+      const d = await r.json();
+      const txt = (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+      if (!txt) { last = new Error(d.promptFeedback?.blockReason || 'EMPTY'); continue; }
+      return JSON.parse(txt.replace(/^```json|```$/g, '').trim());
+    } catch (e) { if (String(e.message).startsWith('KEY')) throw e; last = e; }
+  }
+  throw last || new Error('FAIL');
+}
+function errMsg(e) {
+  const m = String(e.message || e);
+  if (m === 'NO_KEY') return 'أضف مفتاح Gemini من الإعدادات أولاً';
+  if (m.startsWith('KEY')) return 'المفتاح غير صالح أو محظور. أنشئ مفتاحاً جديداً من Google AI Studio';
+  if (/quota|429|exhaust/i.test(m)) return 'انتهت حصة الاستخدام المجانية مؤقتاً. جرّب بعد دقيقة';
+  if (/fetch|network/i.test(m)) return 'ما فيه اتصال بالإنترنت';
+  return 'تعذر التحليل: ' + m.slice(0, 90);
+}
+const errBox = e => `<div class="err">${esc(errMsg(e))}</div>`;
 
-    // ==========================================
-    // 4. التبويبات وشريط الأسبوع
-    // ==========================================
-    function switchTab(tabName) {
-      ['home', 'diary', 'stats', 'settings'].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
-        const navBtn = document.getElementById(`nav-${t}`);
-        if (navBtn) {
-          navBtn.classList.toggle('text-[#00f5d4]', t === tabName);
-          navBtn.classList.toggle('text-slate-400', t !== tabName);
-        }
-      });
-      if (tabName === 'stats') renderStats();
-      if (tabName === 'settings') renderSettings();
-    }
+function norm(it) {
+  const n = x => Math.max(0, +x || 0), g = Math.max(1, Math.round(n(it.grams) || 100));
+  const p = n(it.p100), c = n(it.c100), f = n(it.f100), calc = 4 * p + 4 * c + 9 * f; let cal = n(it.cal100);
+  if (!cal || (calc > 0 && Math.abs(cal - calc) / calc > 0.2)) cal = calc; // توحيد السعرات مع الماكروز
+  return { name: String(it.name || 'صنف'), grams: g, per: { cal, p, c, f }, conf: n(it.confidence), note: it.note || '' };
+}
+const tot = it => { const r = it.grams / 100; return { cal: it.per.cal * r, p: it.per.p * r, c: it.per.c * r, f: it.per.f * r }; };
 
-    function renderWeekStrip() {
-      const strip = document.getElementById('week-strip');
-      strip.innerHTML = '';
-      const arDays = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
-      const today = new Date();
+function showResults(raw, box, retry) {
+  const items = (raw || []).map(norm); box.innerHTML = '';
+  if (!items.length) { box.innerHTML = '<div class="xs mut" style="text-align:center;padding:10px">ما قدرت أتعرف على أكل. جرّب صورة أوضح أو اكتب ملاحظة.</div>'; return; }
+  const live = []; const head = document.createElement('div'); head.className = 'card row between b'; head.style.padding = '12px 16px';
+  const note = document.createElement('div'); note.className = 'xs mut'; note.textContent = 'التقدير من الصورة تقريبي. عدّل الغرامات وتتحدث القيم فوراً.';
+  const refresh = () => { const t = sum(live.map(i => tot(i))); head.innerHTML = `<span>الإجمالي</span><span style="color:var(--cy)">${Math.round(t.cal)} سعرة</span><span class="xs" style="color:var(--em)">ب ${r1(t.p)}g</span><span class="xs" style="color:var(--am)">ك ${r1(t.c)}g</span><span class="xs" style="color:var(--pu)">د ${r1(t.f)}g</span>`; };
+  box.append(note, head);
+  items.forEach(it => {
+    live.push(it); const card = document.createElement('div'); card.className = 'card col'; card.style.padding = '14px';
+    card.innerHTML = `<div class="row between"><div style="min-width:0"><div class="b">${esc(it.name)}</div>${it.note ? `<div class="xs mut">${esc(it.note)}</div>` : ''}${it.conf && it.conf < 60 ? '<div class="xs" style="color:var(--am)">⚠ تقدير غير مؤكد، راجع الوزن</div>' : ''}</div><button data-rm class="ico danger" style="width:36px;height:36px" aria-label="إزالة">✕</button></div>
+    <div class="stepper"><button data-s="-10">−</button><input data-g type="number" inputmode="numeric" value="${it.grams}"><button data-s="10">+</button><span class="xs mut b">غرام</span></div><div data-m class="g4" style="background:rgba(0,0,0,.25);border-radius:16px;padding:10px"></div>`;
+    const inp = card.querySelector('[data-g]'), m = card.querySelector('[data-m]');
+    const upd = () => { it.grams = Math.max(1, +inp.value || 1); const t = tot(it); m.innerHTML = macroCells(t.cal, t.p, t.c, t.f); refresh(); };
+    inp.oninput = upd;
+    card.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { inp.value = Math.max(1, (+inp.value || 0) + +b.dataset.s); upd(); });
+    card.querySelector('[data-rm]').onclick = () => { live.splice(live.indexOf(it), 1); card.remove(); refresh(); };
+    box.appendChild(card); upd();
+  });
+  const add = document.createElement('button'); add.className = 'btn primary'; add.textContent = 'إضافة الكل إلى اليوم';
+  add.onclick = () => { if (!live.length) return; const mk = $('meal').value; live.forEach(it => addFood(mk, { name: it.name, grams: it.grams, per: it.per, ...tot(it) })); closeSheet(); toast(`تمت إضافة ${live.length} أصناف ✓`); };
+  box.appendChild(add);
+  if (retry) { const rt = document.createElement('button'); rt.className = 'btn ghost'; rt.textContent = '↻ إعادة التحليل'; rt.onclick = retry; box.appendChild(rt); }
+  setTimeout(() => $('sbody').scrollTo({ top: $('sbody').scrollHeight, behavior: 'smooth' }), 150);
+}
 
-      for (let i = -5; i <= 1; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
-        const dateStr = d.toISOString().split('T')[0];
-        const isSelected = dateStr === state.selectedDate;
-        const isToday = dateStr === getTodayStr();
+function compress(file, max = 1280) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = e => { const im = new Image(); im.onload = () => {
+      let w = im.width, h = im.height; if (w > max) { h = Math.round(h * max / w); w = max; }
+      const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h);
+      const u = c.toDataURL('image/jpeg', .85); res({ url: u, b64: u.split(',')[1] }); };
+      im.onerror = rej; im.src = e.target.result; };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
 
-        const btn = document.createElement('button');
-        btn.onclick = () => {
-          state.selectedDate = dateStr;
-          saveState();
-          renderAll();
-        };
-        btn.className = `flex-1 min-w-[46px] py-2 rounded-2xl flex flex-col items-center gap-1 transition active:scale-95 ${
-          isSelected
-            ? 'bg-gradient-to-b from-[#00f5d4] to-[#00bbf9] text-[#03042e] font-black shadow-lg'
-            : 'glass-card text-slate-300 font-bold'
-        }`;
-        btn.innerHTML = `
-          <span class="text-[10px] ${isSelected ? 'text-[#03042e]/80' : 'text-slate-400'}">${arDays[d.getDay()]}</span>
-          <span class="text-sm">${d.getDate()}</span>
-          ${isToday ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#03042e]' : 'bg-[#00f5d4]'}"></span>` : '<span class="h-1.5"></span>'}
-        `;
-        strip.appendChild(btn);
+/* ---------- تحليل الصورة ---------- */
+let lastImg = null;
+async function photo(ev) {
+  const f = ev.target.files?.[0]; if (!f) return;
+  $('pbox').classList.remove('hidden'); $('pload').classList.remove('hidden'); $('pres').innerHTML = '';
+  try { const c = await compress(f); lastImg = c.b64; $('pimg').src = c.url; }
+  catch (e) { $('pload').classList.add('hidden'); $('pres').innerHTML = '<div class="err">تعذر قراءة الصورة، جرّب صورة ثانية</div>'; return; }
+  ev.target.value = ''; analyzePhoto();
+}
+async function analyzePhoto() {
+  $('pload').classList.remove('hidden'); $('pres').innerHTML = '';
+  const hint = $('hint').value.trim();
+  const prompt = `أنت أخصائي تغذية خبير في الأكل السعودي والخليجي. حلل صورة الوجبة:
+1) عدّد كل صنف طعام ومشروب مرئي كسطر منفصل، ولا تدمج أصناف مختلفة. لا تنسَ الصلصات والخبز والزيوت والمشروبات.
+2) قدّر الوزن الجاهز للأكل بالغرام لكل صنف من حجمه مقارنة بالصحن (قطر الصحن العادي حوالي 26 سم) والملعقة واليد وأي عنصر مرجعي ظاهر.
+3) أعطِ القيم لكل 100 غرام للصنف كما هو في الصورة (cal100, p100, c100, f100) مع احتساب طريقة الطبخ والزيت أو السمن المخفي.
+4) confidence رقم 0 إلى 100 يعكس ثقتك، و note ملاحظة قصيرة بالعربي عن التقدير.
+5) أسماء الأصناف بالعربي. إن لم تكن الصورة طعاماً أرجع items فارغة.
+${hint ? 'ملاحظات المستخدم (لها الأولوية): ' + hint : ''}`;
+  try { const r = await ai(prompt, lastImg, SCHEMA); showResults(r.items, $('pres'), analyzePhoto); }
+  catch (e) { $('pres').innerHTML = errBox(e); }
+  $('pload').classList.add('hidden');
+}
+
+/* ---------- تحليل النص ---------- */
+async function analyzeText() {
+  const t = $('ttxt').value.trim(); if (!t) return toast('اكتب وجبتك أولاً');
+  const b = $('tbtn'); b.disabled = true; b.textContent = 'أحسب...'; $('tres').innerHTML = '';
+  const prompt = `أنت حاسبة تغذية دقيقة تعتمد على بيانات USDA والمنتجات السعودية. حوّل هذا الوصف إلى أصناف منفصلة.
+لكل صنف: الوزن بالغرام (grams) كما ذكره المستخدم. إن لم يذكر وزناً افترض حصة معتادة وانبّه في note. الأطعمة تُعتبر مطبوخة ما لم يُذكر غير ذلك. ملعقة كبيرة = 15غ، ملعقة صغيرة = 5غ، كوب = 240مل.
+القيم الغذائية لكل 100 غرام (cal100, p100, c100, f100). أسماء الأصناف بالعربي. confidence من 0 إلى 100.
+الوصف: """${t}"""`;
+  try { const r = await ai(prompt, null, SCHEMA); showResults(r.items, $('tres')); }
+  catch (e) { $('tres').innerHTML = errBox(e); }
+  b.disabled = false; b.textContent = 'احسب السعرات';
+}
+
+/* ---------- الباركود والمنتجات ---------- */
+let cam = null, cur = null;
+function filt(q) {
+  q = (q || '').trim().toLowerCase();
+  const l = PRODUCTS.filter(p => !q || p.name.includes(q) || p.brand.includes(q));
+  $('pcnt').textContent = l.length + ' منتج';
+  const box = $('plist'); box.innerHTML = '';
+  if (!l.length) { box.innerHTML = '<div class="xs mut" style="text-align:center;padding:8px">غير موجود محلياً. اضغط «بحث» ليقدّره الذكاء الاصطناعي</div>'; return; }
+  l.forEach(p => { const b = document.createElement('button'); b.className = 'opt'; b.style.padding = '11px 14px';
+    b.innerHTML = `<div style="flex:1"><div class="sm b">${esc(p.name)} <span class="xs mut">• ${esc(p.brand)}</span></div><div class="xs mut">${p.cal} سعرة • ${p.p}g بروتين / 100غ</div></div><span class="pill">اختر</span>`;
+    b.onclick = () => pick(p); box.appendChild(b); });
+}
+function pick(p) {
+  cur = p; $('pc').classList.remove('hidden'); $('pc-b').textContent = p.brand || 'منتج'; $('pc-n').textContent = p.name;
+  $('pc-g').value = p.defaultG || 100; pupd(p.defaultG || 100); $('sbody').scrollTo({ top: 0, behavior: 'smooth' });
+}
+function pupd(v) { if (!cur) return; const g = Math.max(1, +v || 100), r = g / 100; $('pc-m').innerHTML = macroCells(cur.cal * r, cur.p * r, cur.c * r, cur.f * r); }
+function pstep(d) { $('pc-g').value = Math.max(1, (+$('pc-g').value || 0) + d); pupd($('pc-g').value); }
+function padd() {
+  if (!cur) return; const g = Math.max(1, +$('pc-g').value || 100), r = g / 100;
+  addFood($('meal').value, { name: `${cur.name} (${cur.brand})`, grams: g, per: { cal: cur.cal, p: cur.p, c: cur.c, f: cur.f }, cal: cur.cal * r, p: cur.p * r, c: cur.c * r, f: cur.f * r });
+  $('pc').classList.add('hidden'); closeSheet(); toast('تمت الإضافة ✓');
+}
+const toProd = (it, brand) => ({ brand, name: it.name, cal: it.per.cal, p: it.per.p, c: it.per.c, f: it.per.f, defaultG: it.grams });
+
+async function look(code) {
+  const c = (code || '').trim(); if (!c) return toast('اكتب الباركود أو اسم المنتج');
+  if (/^\d{8,14}$/.test(c)) {
+    toast('أبحث في قاعدة الباركود...');
+    try {
+      const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${c}.json?fields=product_name,product_name_ar,brands,nutriments,serving_quantity`);
+      const d = await r.json();
+      if (d.status === 1 && d.product) {
+        const n = d.product.nutriments || {}, kc = n['energy-kcal_100g'] ?? (n.energy_100g ? n.energy_100g / 4.184 : null);
+        if (kc != null) return pick({ brand: d.product.brands || 'قاعدة الباركود', name: d.product.product_name_ar || d.product.product_name || 'منتج ' + c,
+          cal: Math.round(kc), p: +n.proteins_100g || 0, c: +n.carbohydrates_100g || 0, f: +n.fat_100g || 0, defaultG: Math.round(d.product.serving_quantity) || 100 });
       }
-
-      const selObj = new Date(state.selectedDate);
-      document.getElementById('header-date-label').textContent =
-        state.selectedDate === getTodayStr()
-          ? `اليوم • ${selObj.toLocaleDateString('ar-SA', { day: 'numeric', month: 'long' })}`
-          : selObj.toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-
-    // ==========================================
-    // 5. تحديث الواجهة الرئيسية وسجل يومي
-    // ==========================================
-    const MEAL_META = {
-      breakfast: { title: 'وجبة الفطور', icon: '🍳', color: 'text-amber-400' },
-      lunch: { title: 'وجبة الغداء', icon: '🍗', color: 'text-[#00f5d4]' },
-      dinner: { title: 'وجبة العشاء', icon: '🥗', color: 'text-purple-400' },
-      snack: { title: 'وجبة خفيفة', icon: '🍎', color: 'text-emerald-400' }
-    };
-
-    function renderAll() {
-      renderWeekStrip();
-      const day = getDayData(state.selectedDate);
-
-      let totalCal = 0, totalP = 0, totalC = 0, totalF = 0, totalItems = 0;
-      Object.values(day.meals).forEach(list => {
-        list.forEach(item => {
-          totalCal += Number(item.cal || 0);
-          totalP += Number(item.p || 0);
-          totalC += Number(item.c || 0);
-          totalF += Number(item.f || 0);
-          totalItems++;
-        });
-      });
-
-      totalCal = Math.round(totalCal);
-      totalP = Math.round(totalP * 10) / 10;
-      totalC = Math.round(totalC * 10) / 10;
-      totalF = Math.round(totalF * 10) / 10;
-
-      const rem = Math.max(0, state.goals.cal - totalCal);
-      document.getElementById('cal-remaining').textContent = rem;
-      document.getElementById('cal-goal-display').innerHTML = `${state.goals.cal} <small class="text-[10px] text-slate-400">سعرة</small>`;
-      document.getElementById('cal-consumed-display').innerHTML = `${totalCal} <small class="text-[10px] text-slate-400">سعرة</small>`;
-      document.getElementById('meals-count-display').textContent = `${totalItems} أصناف`;
-
-      const pct = Math.min(1, totalCal / Math.max(1, state.goals.cal));
-      const circumference = 314.16;
-      document.getElementById('cal-ring').style.strokeDashoffset = circumference - pct * circumference;
-
-      // الماكروز
-      document.getElementById('macro-p-val').textContent = totalP;
-      document.getElementById('macro-p-goal').textContent = state.goals.p;
-      document.getElementById('macro-p-bar').style.width = `${Math.min(100, (totalP / Math.max(1, state.goals.p)) * 100)}%`;
-
-      document.getElementById('macro-c-val').textContent = totalC;
-      document.getElementById('macro-c-goal').textContent = state.goals.c;
-      document.getElementById('macro-c-bar').style.width = `${Math.min(100, (totalC / Math.max(1, state.goals.c)) * 100)}%`;
-
-      document.getElementById('macro-f-val').textContent = totalF;
-      document.getElementById('macro-f-goal').textContent = state.goals.f;
-      document.getElementById('macro-f-bar').style.width = `${Math.min(100, (totalF / Math.max(1, state.goals.f)) * 100)}%`;
-
-      // الماء
-      document.getElementById('water-val').textContent = day.water;
-      document.getElementById('water-goal-val').textContent = state.goals.water;
-
-      // ملخص الوجبات في الرئيسية
-      const homeSummary = document.getElementById('home-meals-summary');
-      homeSummary.innerHTML = '';
-      Object.entries(MEAL_META).forEach(([key, meta]) => {
-        const items = day.meals[key] || [];
-        const mCal = Math.round(items.reduce((s, x) => s + Number(x.cal || 0), 0));
-        const row = document.createElement('div');
-        row.className = 'flex items-center justify-between bg-white/[0.04] rounded-2xl px-3.5 py-2.5 border border-white/5';
-        row.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <span class="text-lg">${meta.icon}</span>
-            <div>
-              <div class="text-xs font-extrabold text-white">${meta.title}</div>
-              <div class="text-[10px] text-slate-400">${items.length} أصناف</div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <span class="text-xs font-black ${meta.color}">${mCal} سعرة</span>
-            <button onclick="openActionModal('menu', '${key}')" class="w-7 h-7 rounded-xl bg-white/10 text-white font-bold text-sm active:scale-90 transition">+</button>
-          </div>
-        `;
-        homeSummary.appendChild(row);
-      });
-
-      // صفحة سجل يومي التفصيلية
-      renderDiaryPage(day);
-    }
-
-    function renderDiaryPage(day) {
-      const container = document.getElementById('diary-meals-container');
-      container.innerHTML = '';
-
-      Object.entries(MEAL_META).forEach(([mealKey, meta]) => {
-        const items = day.meals[mealKey] || [];
-        const mCal = Math.round(items.reduce((s, x) => s + Number(x.cal || 0), 0));
-        const mPro = Math.round(items.reduce((s, x) => s + Number(x.p || 0), 0) * 10) / 10;
-        const mCarb = Math.round(items.reduce((s, x) => s + Number(x.c || 0), 0) * 10) / 10;
-        const mFat = Math.round(items.reduce((s, x) => s + Number(x.f || 0), 0) * 10) / 10;
-
-        const card = document.createElement('div');
-        card.className = 'glass-card rounded-3xl p-4 space-y-3';
-        card.innerHTML = `
-          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-            <div class="flex items-center gap-2.5">
-              <span class="text-2xl">${meta.icon}</span>
-              <div>
-                <h3 class="text-sm font-black text-white">${meta.title}</h3>
-                <p class="text-[11px] text-slate-400">${mCal} سعرة • ${mPro}g بروتين • ${mCarb}g كارب • ${mFat}g دهون</p>
-              </div>
-            </div>
-            <button onclick="openActionModal('menu', '${mealKey}')" class="w-8 h-8 rounded-xl bg-[#00f5d4]/15 border border-[#00f5d4]/30 text-[#00f5d4] font-black text-base active:scale-90 transition">+</button>
-          </div>
-          <div class="space-y-2">
-            ${items.length === 0 ? `<p class="text-xs text-slate-500 text-center py-2">لا توجد أصناف مسجلة بعد</p>` : ''}
-            ${items.map((item, idx) => `
-              <div class="bg-white/[0.04] rounded-2xl p-3 border border-white/5 flex items-center justify-between gap-2">
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-extrabold text-white truncate">${item.name}</div>
-                  <div class="text-[11px] text-slate-400 mt-0.5">
-                    <span class="text-[#00f5d4] font-bold">${Math.round(item.cal)} سعرة</span> • 
-                    بروتين ${item.p}g • كارب ${item.c}g • دهون ${item.f}g
-                  </div>
-                </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                  <button onclick="editItemGrams('${mealKey}', ${idx})" class="px-2.5 py-1 rounded-xl bg-white/10 text-[11px] font-extrabold text-[#00f5d4] active:scale-95 transition">
-                    ${item.grams}g ✎
-                  </button>
-                  <button onclick="deleteMealItem('${mealKey}', ${idx})" class="w-7 h-7 rounded-xl bg-rose-500/15 text-rose-400 text-xs font-bold active:scale-90 transition">
-                    🗑
-                  </button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function addFoodToDiary(mealKey, item) {
-      const day = getDayData(state.selectedDate);
-      day.meals[mealKey].push({
-        name: item.name,
-        grams: Math.round(item.grams),
-        cal: Math.round(item.cal),
-        p: Math.round(item.p * 10) / 10,
-        c: Math.round(item.c * 10) / 10,
-        f: Math.round(item.f * 10) / 10
-      });
-      saveState();
-      renderAll();
-      showToast(`تمت إضافة "${item.name}" بنجاح ✓`);
-    }
-
-    function deleteMealItem(mealKey, idx) {
-      const day = getDayData(state.selectedDate);
-      day.meals[mealKey].splice(idx, 1);
-      saveState();
-      renderAll();
-      showToast('تم حذف الصنف');
-    }
-
-    function editItemGrams(mealKey, idx) {
-      const day = getDayData(state.selectedDate);
-      const item = day.meals[mealKey][idx];
-      const newG = prompt(`تعديل الوزن بالغرام لصنف (${item.name}):`, item.grams);
-      if (newG && !isNaN(newG) && Number(newG) > 0) {
-        const ratio = Number(newG) / Math.max(1, item.grams);
-        item.grams = Math.round(Number(newG));
-        item.cal = Math.round(item.cal * ratio);
-        item.p = Math.round(item.p * ratio * 10) / 10;
-        item.c = Math.round(item.c * ratio * 10) / 10;
-        item.f = Math.round(item.f * ratio * 10) / 10;
-        saveState();
-        renderAll();
-        showToast('تم تحديث الوزن والماكروز بدقة');
-      }
-    }
-
-    function changeWater(delta) {
-      const day = getDayData(state.selectedDate);
-      day.water = Math.max(0, day.water + delta);
-      saveState();
-      renderAll();
-    }
-
-    // ==========================================
-    // 6. الإحصائيات والإعدادات
-    // ==========================================
-    function renderStats() {
-      const chart = document.getElementById('stats-chart');
-      chart.innerHTML = '';
-      const arDays = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
-      const today = new Date();
-      let sumCal = 0, sumPro = 0, activeDays = 0;
-
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
-        const day = state.days[dateStr];
-        let dCal = 0, dPro = 0;
-        if (day) {
-          Object.values(day.meals).forEach(list => {
-            list.forEach(x => { dCal += x.cal; dPro += x.p; });
-          });
-        }
-        if (dCal > 0) { sumCal += dCal; sumPro += dPro; activeDays++; }
-
-        const hPct = Math.min(100, Math.round((dCal / Math.max(1, state.goals.cal)) * 100));
-        const col = document.createElement('div');
-        col.className = 'flex-1 flex flex-col items-center gap-1.5 h-full justify-end';
-        col.innerHTML = `
-          <span class="text-[9px] text-slate-400 font-bold">${dCal > 0 ? Math.round(dCal) : ''}</span>
-          <div class="w-full max-w-[26px] bg-white/5 rounded-t-xl h-32 flex items-end overflow-hidden">
-            <div class="w-full bg-gradient-to-t from-[#9b5de5] to-[#00f5d4] rounded-t-xl transition-all duration-500" style="height: ${hPct}%"></div>
-          </div>
-          <span class="text-[10px] text-slate-300 font-bold">${arDays[d.getDay()]}</span>
-        `;
-        chart.appendChild(col);
-      }
-
-      document.getElementById('stat-avg-cal').textContent = activeDays ? Math.round(sumCal / activeDays) : 0;
-      document.getElementById('stat-avg-pro').textContent = (activeDays ? Math.round(sumPro / activeDays) : 0) + 'g';
-    }
-
-    function renderSettings() {
-      document.getElementById('set-cal').value = state.goals.cal;
-      document.getElementById('set-pro').value = state.goals.p;
-      document.getElementById('set-carb').value = state.goals.c;
-      document.getElementById('set-fat').value = state.goals.f;
-      document.getElementById('set-water').value = state.goals.water;
-      document.getElementById('device-id-label').textContent = DEVICE_ID;
-    }
-
-    function saveSettings() {
-      state.goals.cal = Number(document.getElementById('set-cal').value) || 2200;
-      state.goals.p = Number(document.getElementById('set-pro').value) || 160;
-      state.goals.c = Number(document.getElementById('set-carb').value) || 230;
-      state.goals.f = Number(document.getElementById('set-fat').value) || 65;
-      state.goals.water = Number(document.getElementById('set-water').value) || 3000;
-      saveState();
-      renderAll();
-      showToast('تم حفظ أهدافك بنجاح ✓');
-    }
-
-    // ==========================================
-    // 7. التحكم في النافذة المنبثقة (Bottom Sheet)
-    // ==========================================
-    function openActionModal(view = 'menu', mealKey = null) {
-      if (mealKey) document.getElementById('target-meal-select').value = mealKey;
-      document.getElementById('action-modal').classList.remove('hidden');
-      switchModalView(view);
-    }
-
-    function closeActionModal() {
-      stopBarcodeCamera();
-      document.getElementById('action-modal').classList.add('hidden');
-    }
-
-    function switchModalView(view) {
-      ['menu', 'photo', 'barcode', 'text'].forEach(v => {
-        document.getElementById(`modal-view-${v}`).classList.toggle('hidden', v !== view);
-      });
-      if (view === 'barcode') {
-        filterSaudiProducts('');
-      }
-      document.getElementById('modal-scroll-area').scrollTop = 0;
-    }
-
-    // ==========================================
-    // 8. محرك Gemini 2.5 Flash للصور والنصوص والباركود
-    // ==========================================
-    async function callGeminiAPI(promptText, base64Image = null) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-      const parts = [{ text: promptText }];
-      if (base64Image) {
-        parts.push({
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: base64Image
-          }
-        });
-      }
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: {
-            temperature: 0.1,
-            responseMimeType: "application/json"
-          }
-        })
-      });
-
-      if (!response.ok) throw new Error('API Error');
-      const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-      return JSON.parse(rawText);
-    }
-
-    // ضغط صور الآيفون الكبيرة تلقائياً قبل الإرسال لضمان السرعة والدقة
-    function compressImageToBase64(file, maxWidth = 900) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let w = img.width, h = img.height;
-            if (w > maxWidth) {
-              h = Math.round((h * maxWidth) / w);
-              w = maxWidth;
-            }
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            resolve({ dataUrl, base64: dataUrl.split(',')[1] });
-          };
-          img.onerror = reject;
-          img.src = e.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // أ) تحليل صورة الوجبة تلقائياً فور اختيارها
-    async function handleMealPhotoUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      const previewBox = document.getElementById('photo-preview-box');
-      const previewImg = document.getElementById('photo-preview-img');
-      const loadingOverlay = document.getElementById('photo-loading-overlay');
-      const resultsArea = document.getElementById('photo-results-area');
-
-      previewBox.classList.remove('hidden');
-      loadingOverlay.classList.remove('hidden');
-      resultsArea.innerHTML = '';
-
-      try {
-        const { dataUrl, base64 } = await compressImageToBase64(file, 900);
-        previewImg.src = dataUrl;
-
-        const prompt = `أنت خبير تغذية دقيق جداً. حلل هذه الصورة للوجبة بدقة 100% وقدّر وزن كل مكون بالغرام (grams) والسعرات الحرارية (cal) والبروتين (p) والكارب (c) والدهون (f) لكل مكون على حدة باللغة العربية.
-        أرجع النتيجة بصيغة JSON فقط بهذا الهيكل:
-        { "items": [ { "name": "اسم الصنف بالعربي", "grams": 150, "cal": 250, "p": 30, "c": 5, "f": 10 } ] }`;
-
-        const result = await callGeminiAPI(prompt, base64);
-        loadingOverlay.classList.add('hidden');
-        renderAIResults(result.items || [], resultsArea);
-      } catch (err) {
-        loadingOverlay.classList.add('hidden');
-        resultsArea.innerHTML = `<div class="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-xs text-rose-300 text-center">تعذر تحليل الصورة، تأكد من اتصال الإنترنت أو جرب صورة أوضح.</div>`;
-      }
-      event.target.value = '';
-    }
-
-    // ب) تحليل النص العربي بالغرام
-    async function analyzeMealText() {
-      const input = document.getElementById('meal-text-input').value.trim();
-      if (!input) return showToast('اكتب مكونات وجبتك أولاً');
-
-      const btn = document.getElementById('analyze-text-btn');
-      const resultsArea = document.getElementById('text-results-area');
-      btn.disabled = true;
-      btn.textContent = 'جاري الحساب بدقة...';
-      resultsArea.innerHTML = '';
-
-      try {
-        const prompt = `أنت حاسبة سعرات غذائية دقيقة جداً تعتمد على بيانات USDA والمنتجات السعودية. حلل النص التالي بدقة وحوّل كل صنف إلى وزن بالغرام (grams) وسعرات (cal) وبروتين (p) وكارب (c) ودهون (f) باللغة العربية.
-        النص: "${input}"
-        أرجع JSON فقط بهذا الهيكل:
-        { "items": [ { "name": "اسم الصنف بالعربي", "grams": 200, "cal": 330, "p": 62, "c": 0, "f": 7.2 } ] }`;
-
-        const result = await callGeminiAPI(prompt);
-        renderAIResults(result.items || [], resultsArea);
-      } catch (err) {
-        resultsArea.innerHTML = `<div class="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-xs text-rose-300 text-center">حدث خطأ في الاتصال، حاول مرة أخرى.</div>`;
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'احسب السعرات بدقة 100%';
-      }
-    }
-
-    function renderAIResults(items, container) {
-      if (!items.length) {
-        container.innerHTML = `<p class="text-xs text-slate-400 text-center">لم يتم التعرف على أصناف، حاول التوضيح أكثر.</p>`;
-        return;
-      }
-
-      container.innerHTML = `<div class="text-xs font-extrabold text-[#00f5d4] mb-1">تم التعرف على ${items.length} أصناف بدقة:</div>`;
-
-      items.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'glass-card rounded-2xl p-3.5 border border-white/10 space-y-2.5';
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-black text-white">${item.name}</span>
-            <span class="text-xs font-extrabold text-[#00f5d4] bg-[#00f5d4]/15 px-2.5 py-0.5 rounded-lg">${item.grams} غرام</span>
-          </div>
-          <div class="grid grid-cols-4 gap-1.5 text-center bg-black/25 rounded-xl p-2 text-xs">
-            <div><span class="text-[10px] text-slate-400 block">سعرات</span><strong class="text-white">${Math.round(item.cal)}</strong></div>
-            <div><span class="text-[10px] text-slate-400 block">بروتين</span><strong class="text-emerald-400">${item.p}g</strong></div>
-            <div><span class="text-[10px] text-slate-400 block">كارب</span><strong class="text-amber-400">${item.c}g</strong></div>
-            <div><span class="text-[10px] text-slate-400 block">دهون</span><strong class="text-purple-400">${item.f}g</strong></div>
-          </div>
-          <button id="add-ai-btn-${index}" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00f5d4] to-[#00bbf9] text-[#03042e] font-black text-xs active:scale-95 transition">
-            + إضافة إلى الوجبة
-          </button>
-        `;
-        container.appendChild(card);
-
-        document.getElementById(`add-ai-btn-${index}`).onclick = () => {
-          const mealKey = document.getElementById('target-meal-select').value;
-          addFoodToDiary(mealKey, item);
-          const btn = document.getElementById(`add-ai-btn-${index}`);
-          btn.textContent = '✓ تمت الإضافة';
-          btn.disabled = true;
-          btn.classList.replace('from-[#00f5d4]', 'from-emerald-500');
-        };
-      });
-
-      if (items.length > 1) {
-        const addAllBtn = document.createElement('button');
-        addAllBtn.className = 'w-full py-3 rounded-2xl bg-gradient-to-r from-[#9b5de5] to-[#00f5d4] text-[#03042e] font-black text-xs shadow-lg active:scale-95 transition mt-2';
-        addAllBtn.textContent = `⚡ إضافة جميع الأصناف (${items.length}) دفعة واحدة`;
-        addAllBtn.onclick = () => {
-          const mealKey = document.getElementById('target-meal-select').value;
-          items.forEach(it => addFoodToDiary(mealKey, it));
-          closeActionModal();
-        };
-        container.appendChild(addAllBtn);
-      }
-
-      setTimeout(() => {
-        document.getElementById('modal-scroll-area').scrollTo({ top: document.getElementById('modal-scroll-area').scrollHeight, behavior: 'smooth' });
-      }, 150);
-    }
-
-    // ==========================================
-    // 9. نظام الباركود والمنتجات السعودية
-    // ==========================================
-    let html5QrScanner = null;
-    let currentSelectedProduct = null;
-
-    function filterSaudiProducts(query) {
-      const q = query.trim().toLowerCase();
-      const list = document.getElementById('saudi-products-list');
-      const filtered = SAUDI_PRODUCTS.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.barcode.includes(q)
-      );
-
-      document.getElementById('saudi-count-badge').textContent = `${filtered.length} منتج`;
-      list.innerHTML = '';
-
-      if (filtered.length === 0) {
-        list.innerHTML = `
-          <div class="text-center py-4 space-y-2">
-            <p class="text-xs text-slate-400">المنتج غير موجود في القائمة المحلية</p>
-            <button onclick="searchBarcodeOnline()" class="px-4 py-2 rounded-xl bg-[#00f5d4]/20 text-[#00f5d4] font-bold text-xs">
-              ابحث عنه بالذكاء الاصطناعي وقاعدة الباركود العالمية
-            </button>
-          </div>
-        `;
-        return;
-      }
-
-      filtered.forEach(prod => {
-        const btn = document.createElement('button');
-        btn.className = 'w-full glass-card rounded-2xl p-3 flex items-center justify-between text-right hover:border-[#00f5d4]/40 transition active:scale-98';
-        btn.innerHTML = `
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] px-2 py-0.5 rounded-md bg-white/10 text-[#00f5d4] font-bold">${prod.brand}</span>
-              <span class="text-xs font-extrabold text-white">${prod.name}</span>
-            </div>
-            <div class="text-[10px] text-slate-400 mt-1">لكل 100g: ${prod.cal} سعرة • ${prod.p}g بروتين • باركود: ${prod.barcode}</div>
-          </div>
-          <span class="text-xs font-black text-[#00f5d4]">اختر ←</span>
-        `;
-        btn.onclick = () => selectProductForGrams(prod);
-        list.appendChild(btn);
-      });
-    }
-
-    function selectProductForGrams(prod) {
-      currentSelectedProduct = prod;
-      document.getElementById('selected-product-card').classList.remove('hidden');
-      document.getElementById('sel-prod-brand').textContent = prod.brand || 'منتج مسجل';
-      document.getElementById('sel-prod-name').textContent = prod.name;
-      const g = prod.defaultG || 100;
-      document.getElementById('sel-prod-grams-input').value = g;
-      document.getElementById('sel-prod-slider').value = g;
-      updateSelectedProductMacros(g);
-      document.getElementById('modal-scroll-area').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function updateSelectedProductMacros(gramsVal) {
-      if (!currentSelectedProduct) return;
-      const g = Math.max(1, Number(gramsVal) || 100);
-      document.getElementById('sel-prod-grams-input').value = g;
-      document.getElementById('sel-prod-slider').value = Math.min(600, g);
-
-      const ratio = g / 100;
-      document.getElementById('sel-prod-cal').textContent = Math.round(currentSelectedProduct.cal * ratio);
-      document.getElementById('sel-prod-pro').textContent = (Math.round(currentSelectedProduct.p * ratio * 10) / 10) + 'g';
-      document.getElementById('sel-prod-carb').textContent = (Math.round(currentSelectedProduct.c * ratio * 10) / 10) + 'g';
-      document.getElementById('sel-prod-fat').textContent = (Math.round(currentSelectedProduct.f * ratio * 10) / 10) + 'g';
-    }
-
-    function confirmAddSelectedProduct() {
-      if (!currentSelectedProduct) return;
-      const g = Math.max(1, Number(document.getElementById('sel-prod-grams-input').value) || 100);
-      const ratio = g / 100;
-      const mealKey = document.getElementById('target-meal-select').value;
-
-      addFoodToDiary(mealKey, {
-        name: `${currentSelectedProduct.name} (${currentSelectedProduct.brand})`,
-        grams: g,
-        cal: currentSelectedProduct.cal * ratio,
-        p: currentSelectedProduct.p * ratio,
-        c: currentSelectedProduct.c * ratio,
-        f: currentSelectedProduct.f * ratio
-      });
-
-      document.getElementById('selected-product-card').classList.add('hidden');
-      closeActionModal();
-    }
-
-    // تشغيل كاميرا الباركود المباشرة للآيفون
-    async function startBarcodeCamera() {
-      const wrapper = document.getElementById('barcode-camera-wrapper');
-      wrapper.classList.remove('hidden');
-
-      try {
-        if (html5QrScanner) await stopBarcodeCamera();
-        html5QrScanner = new Html5Qrcode("barcode-reader");
-        await html5QrScanner.start(
-          { facingMode: "environment" },
-          { fps: 12, qrbox: { width: 250, height: 130 } },
-          (decodedText) => {
-            stopBarcodeCamera();
-            document.getElementById('barcode-search-input').value = decodedText;
-            showToast(`تم التقاط الباركود: ${decodedText}`);
-            lookupBarcodeByCode(decodedText);
-          },
-          () => {}
-        );
-      } catch (err) {
-        wrapper.classList.add('hidden');
-        showToast('استخدم زر "صوّر الباركود" إذا لم تفتح الكاميرا المباشرة');
-      }
-    }
-
-    async function stopBarcodeCamera() {
-      document.getElementById('barcode-camera-wrapper').classList.add('hidden');
-      if (html5QrScanner) {
-        try {
-          await html5QrScanner.stop();
-          html5QrScanner.clear();
-        } catch (e) {}
-        html5QrScanner = null;
-      }
-    }
-
-    // تصوير الباركود بكاميرا الآيفون الأصلية وقراءته بالذكاء الاصطناعي
-    async function handleBarcodeImageUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      showToast('جاري قراءة الباركود والمنتج...');
-
-      try {
-        const { base64 } = await compressImageToBase64(file, 900);
-        const prompt = `اقرأ رقم الباركود أو اسم المنتج الغذائي الظاهر في هذه الصورة، وأعطني بياناته الغذائية الدقيقة لكل 100 غرام باللغة العربية.
-        أرجع JSON فقط بهذا الهيكل:
-        { "barcode": "الرقم ان وجد", "brand": "الشركة", "name": "اسم المنتج بالعربي", "cal": 150, "p": 10, "c": 20, "f": 5, "defaultG": 100 }`;
-
-        const prod = await callGeminiAPI(prompt, base64);
-        if (prod && prod.name) {
-          if (prod.barcode) document.getElementById('barcode-search-input').value = prod.barcode;
-          selectProductForGrams(prod);
-          showToast('تم التعرف على المنتج بنجاح ✓');
-        }
-      } catch (e) {
-        showToast('تعذر قراءة الصورة، اكتب رقم الباركود يدوياً');
-      }
-      event.target.value = '';
-    }
-
-    // البحث عن الباركود محلياً ثم عالمياً ثم عبر Gemini
-    async function lookupBarcodeByCode(code) {
-      const cleanCode = code.trim();
-      const localMatch = SAUDI_PRODUCTS.find(p => p.barcode === cleanCode);
-      if (localMatch) {
-        selectProductForGrams(localMatch);
-        return;
-      }
-
-      showToast('جاري البحث عن المنتج في القواعد العالمية...');
-      try {
-        const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${cleanCode}.json`);
-        const data = await res.json();
-        if (data.status === 1 && data.product) {
-          const n = data.product.nutriments || {};
-          const prod = {
-            barcode: cleanCode,
-            brand: data.product.brands || 'منتج عالمي',
-            name: data.product.product_name_ar || data.product.product_name || `منتج (${cleanCode})`,
-            cal: Math.round(n['energy-kcal_100g'] || 100),
-            p: Number(n.proteins_100g || 0),
-            c: Number(n.carbohydrates_100g || 0),
-            f: Number(n.fat_100g || 0),
-            defaultG: 100
-          };
-          selectProductForGrams(prod);
-          return;
-        }
-      } catch (e) {}
-
-      // البحث الذكي عبر Gemini
-      try {
-        const prompt = `ابحث عن المنتج الغذائي صاحب الباركود أو الاسم "${cleanCode}" في السوق السعودي والعالمي وأعطني قيمه الغذائية لكل 100 غرام بالعربي.
-        أرجع JSON فقط: { "barcode": "${cleanCode}", "brand": "الشركة", "name": "اسم المنتج بالعربي", "cal": 120, "p": 5, "c": 15, "f": 4, "defaultG": 100 }`;
-        const aiProd = await callGeminiAPI(prompt);
-        if (aiProd && aiProd.name) selectProductForGrams(aiProd);
-      } catch (e) {
-        showToast('لم يتم العثور على المنتج');
-      }
-    }
-
-    function searchBarcodeOnline() {
-      const val = document.getElementById('barcode-search-input').value.trim();
-      if (!val) return showToast('اكتب رقم الباركود أو اسم المنتج');
-      lookupBarcodeByCode(val);
-    }
-
-    // ==========================================
-    // 10. أدوات مساعدة
-    // ==========================================
-    function openInstallGuide() {
-      document.getElementById('install-modal').classList.remove('hidden');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.remove('hidden');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 2800);
-    }
-
-    // التشغيل الأولي
-    loadState();
-    renderAll();
-  </script>
+    } catch (e) {}
+    return toast('الباركود غير مسجل. صوّر ملصق المنتج أو اكتب اسمه');
+  }
+  toast('أقدّر القيم بالذكاء الاصطناعي...');
+  try {
+    const r = await ai(`قدّر القيم الغذائية لكل 100 غرام للمنتج: "${c}" في السوق السعودي. أرجع صنفاً واحداً فقط، و grams هو حجم الحصة المعتادة، والاسم بالعربي.`, null, SCHEMA);
+    if (!r.items?.length) throw new Error('لم أجد المنتج');
+    pick(toProd(norm(r.items[0]), 'تقدير AI'));
+  } catch (e) { toast(errMsg(e)); }
+}
+async function barPhoto(ev) {
+  const f = ev.target.files?.[0]; if (!f) return; ev.target.value = '';
+  toast('أقرأ الباركود...');
+  try { const sc = new Html5Qrcode('reader'); const txt = await sc.scanFile(f, false); try { sc.clear(); } catch (e) {} $('bq').value = txt; return look(txt); } catch (e) {}
+  try { // ما انقرأ الباركود: نقرأ ملصق المنتج بالذكاء الاصطناعي
+    const { b64 } = await compress(f);
+    const r = await ai('هذه صورة منتج غذائي. إن ظهر جدول القيم الغذائية فاستخدم أرقامه بالضبط محوّلة لكل 100 غرام، وإلا قدّر من نوع المنتج. أرجع صنفاً واحداً، grams هو وزن الحصة أو العبوة، والاسم بالعربي.', b64, SCHEMA);
+    if (!r.items?.length) throw new Error('لم أتعرف على المنتج');
+    pick(toProd(norm(r.items[0]), 'تقدير AI')); toast('تم التقدير من الملصق');
+  } catch (e) { toast(errMsg(e)); }
+}
+async function startCam() {
+  $('camw').classList.remove('hidden');
+  try {
+    if (cam) await stopCam(); cam = new Html5Qrcode('reader');
+    await cam.start({ facingMode: 'environment' }, { fps: 12, qrbox: { width: 250, height: 130 } },
+      t => { stopCam(); $('bq').value = t; toast('تم التقاط: ' + t); look(t); }, () => {});
+  } catch (e) { $('camw').classList.add('hidden'); toast('الكاميرا ما فتحت. استخدم «صوّر الباركود»'); }
+}
+async function stopCam() { $('camw').classList.add('hidden'); if (cam) { try { await cam.stop(); cam.clear(); } catch (e) {} cam = null; } }
+
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.remove('hidden'); clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.add('hidden'), 2800); }
+
+renderAll();
+</script>
 </body>
 </html>
