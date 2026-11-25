@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
 
   const { model, payload } = req.body || {};
   if (!MODELS.includes(model) || !payload) return res.status(400).json({ error: { message: 'طلب غير صالح' } });
-  if (payload.generationConfig) payload.generationConfig.maxOutputTokens = Math.min(payload.generationConfig.maxOutputTokens || 4096, 4096);
+  if (payload.generationConfig) payload.generationConfig.maxOutputTokens = Math.min(payload.generationConfig.maxOutputTokens || 4096, 8192);
 
   try {
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
