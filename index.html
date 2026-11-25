@@ -387,38 +387,42 @@ const SCHEMA = { type: 'OBJECT', required: ['items'], properties: { items: { typ
   required: ['name', 'grams', 'cal100', 'p100', 'c100', 'f100'],
   properties: { name: S, barcode: S, grams: N, cal100: N, p100: N, c100: N, f100: N, confidence: N, note: S } } } } };
 
-async function ai(prompt, img = null, schema = null) {
+async function ai(prompt, img = null, schema = null, think = 0) {
   const parts = []; if (img) parts.push({ inlineData: { mimeType: 'image/jpeg', data: img } }); parts.push({ text: prompt });
-  let last;
-  for (const model of MODELS) for (let a = 0; a < 2; a++) {
+  let last; const t0 = Date.now();
+  for (const model of MODELS) {
+    if (Date.now() - t0 > 45000) break;
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), img ? 30000 : 20000);
     try {
       const gc = { temperature: 0.1, maxOutputTokens: 6000, responseMimeType: 'application/json' };
       if (schema) gc.responseSchema = schema;
-      if (model === MODELS[0]) gc.thinkingConfig = { thinkingBudget: 2048 };
-      const r = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model, payload: { contents: [{ parts }], generationConfig: gc } }) });
+      if (model !== 'gemini-flash-latest') gc.thinkingConfig = { thinkingBudget: think };
+      const r = await fetch('/api/gemini', { method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model, payload: { contents: [{ parts }], generationConfig: gc } }) });
       if (!r.ok) {
         if (r.status === 404) throw new Error('NOAPI');
         const e = await r.json().catch(() => ({})), msg = e.error?.message || 'HTTP ' + r.status;
         if (r.status === 403 || /API key/i.test(msg)) throw new Error('KEY: ' + msg);
-        last = new Error(msg);
-        if (r.status === 429 || r.status >= 500) { await sleep(900); continue; }
-        break;
+        last = new Error(msg); continue;
       }
       const d = await r.json();
       const txt = (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
       if (!txt) { last = new Error(d.promptFeedback?.blockReason || 'EMPTY'); continue; }
       return JSON.parse(txt.replace(/^```json|```$/g, '').trim());
-    } catch (e) { if (/^(KEY|NOAPI)/.test(String(e.message))) throw e; last = e; }
+    } catch (e) {
+      if (/^(KEY|NOAPI)/.test(String(e.message))) throw e;
+      last = e.name === 'AbortError' ? new Error('TIMEOUT') : e;
+    } finally { clearTimeout(timer); }
   }
   throw last || new Error('FAIL');
 }
 function errMsg(e) {
   const m = String(e.message || e);
   if (m === 'NOAPI') return 'ملف الوسيط api/gemini.js غير موجود على Vercel. ارفعه داخل مجلد api ثم Redeploy';
+  if (m === 'TIMEOUT') return 'السيرفر تأخر في الرد. جرّب مرة ثانية';
   if (m === 'NO_KEY') return 'مفتاح الذكاء الاصطناعي غير مضاف في الملف';
   if (m.startsWith('KEY')) return 'المفتاح غير صالح أو محظور. أنشئ مفتاحاً جديداً من Google AI Studio';
   if (/quota|429|exhaust/i.test(m)) return 'انتهت حصة الاستخدام المجانية مؤقتاً. جرّب بعد دقيقة';
-  if (/fetch|network/i.test(m)) return 'ما فيه اتصال بالإنترنت';
+  if (/fetch|network|load failed/i.test(m)) return 'ما فيه اتصال بالإنترنت';
   return 'تعذر التحليل: ' + m.slice(0, 90);
 }
 const errBox = e => `<div class="err">${esc(errMsg(e))}</div>`;
@@ -489,7 +493,7 @@ async function analyzePhoto() {
 6) كن متحفظاً ولا تبالغ في الأوزان: الرز المطبوخ في صحن عادي غالباً 150 إلى 250غ، وصدر الدجاج 100 إلى 200غ.
 ${REF}
 ${hint ? 'ملاحظات المستخدم (لها الأولوية): ' + hint : ''}`;
-  try { const r = await ai(prompt, lastImg, SCHEMA); showResults(r.items, $('pres'), analyzePhoto); }
+  try { const r = await ai(prompt, lastImg, SCHEMA, 1024); showResults(r.items, $('pres'), analyzePhoto); }
   catch (e) { $('pres').innerHTML = errBox(e); }
   $('pload').classList.add('hidden');
 }
