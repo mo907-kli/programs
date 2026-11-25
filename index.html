@@ -227,6 +227,7 @@ nav .wrap{display:flex;justify-content:space-around;align-items:center}
   <div class="g3" style="grid-template-columns:1fr 1fr"><button class="btn ghost" onclick="closeEdit()">إلغاء</button><button class="btn primary" onclick="saveEdit()">حفظ</button></div>
  </div>
 </div>
+<div id="scanfile" style="position:absolute;left:-9999px;top:0;width:300px;height:300px"></div>
 <div id="toast" class="hidden"></div>
 
 <script>
@@ -272,6 +273,7 @@ const PRODUCTS = [
  ['لحم','حاشي مطبوخ قليل الدهن',175,26,0,7.5,150],['لحم','غنم نعيمي مطبوخ',255,24,0,17.5,150],
  ['أكلات','كبسة دجاج',175,11.5,21,5,300],['أكلات','فول مدمس',110,7.5,17,0.5,150]
 ].map(a => ({ brand: a[0], name: a[1], cal: a[2], p: a[3], c: a[4], f: a[5], defaultG: a[6] }));
+const REF = 'قيم مرجعية لكل 100غ (استخدمها حرفياً عند تطابق الصنف، وإلا اعتمد على USDA): ' + PRODUCTS.map(p => `${p.name} ${p.cal}kcal ب${p.p} ك${p.c} د${p.f}`).join('، ') + '، سلطة خضار 20kcal، خيار 15kcal، طماطم 18kcal، بطاطس مقلية 312kcal، عصير برتقال 45kcal، قهوة عربية 2kcal.';
 
 /* ---------- التنقل والعرض ---------- */
 function tab(t) {
@@ -383,18 +385,19 @@ const MODELS = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lit
 const N = { type: 'NUMBER' }, S = { type: 'STRING' };
 const SCHEMA = { type: 'OBJECT', required: ['items'], properties: { items: { type: 'ARRAY', items: { type: 'OBJECT',
   required: ['name', 'grams', 'cal100', 'p100', 'c100', 'f100'],
-  properties: { name: S, grams: N, cal100: N, p100: N, c100: N, f100: N, confidence: N, note: S } } } } };
+  properties: { name: S, barcode: S, grams: N, cal100: N, p100: N, c100: N, f100: N, confidence: N, note: S } } } } };
 
 async function ai(prompt, img = null, schema = null) {
   const parts = []; if (img) parts.push({ inlineData: { mimeType: 'image/jpeg', data: img } }); parts.push({ text: prompt });
   let last;
   for (const model of MODELS) for (let a = 0; a < 2; a++) {
     try {
-      const gc = { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' };
+      const gc = { temperature: 0.1, maxOutputTokens: 6000, responseMimeType: 'application/json' };
       if (schema) gc.responseSchema = schema;
-      if (model === MODELS[0]) gc.thinkingConfig = { thinkingBudget: 1024 };
+      if (model === MODELS[0]) gc.thinkingConfig = { thinkingBudget: 2048 };
       const r = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model, payload: { contents: [{ parts }], generationConfig: gc } }) });
       if (!r.ok) {
+        if (r.status === 404) throw new Error('NOAPI');
         const e = await r.json().catch(() => ({})), msg = e.error?.message || 'HTTP ' + r.status;
         if (r.status === 403 || /API key/i.test(msg)) throw new Error('KEY: ' + msg);
         last = new Error(msg);
@@ -405,12 +408,13 @@ async function ai(prompt, img = null, schema = null) {
       const txt = (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
       if (!txt) { last = new Error(d.promptFeedback?.blockReason || 'EMPTY'); continue; }
       return JSON.parse(txt.replace(/^```json|```$/g, '').trim());
-    } catch (e) { if (String(e.message).startsWith('KEY')) throw e; last = e; }
+    } catch (e) { if (/^(KEY|NOAPI)/.test(String(e.message))) throw e; last = e; }
   }
   throw last || new Error('FAIL');
 }
 function errMsg(e) {
   const m = String(e.message || e);
+  if (m === 'NOAPI') return 'ملف الوسيط api/gemini.js غير موجود على Vercel. ارفعه داخل مجلد api ثم Redeploy';
   if (m === 'NO_KEY') return 'مفتاح الذكاء الاصطناعي غير مضاف في الملف';
   if (m.startsWith('KEY')) return 'المفتاح غير صالح أو محظور. أنشئ مفتاحاً جديداً من Google AI Studio';
   if (/quota|429|exhaust/i.test(m)) return 'انتهت حصة الاستخدام المجانية مؤقتاً. جرّب بعد دقيقة';
@@ -482,6 +486,8 @@ async function analyzePhoto() {
 3) أعطِ القيم لكل 100 غرام للصنف كما هو في الصورة (cal100, p100, c100, f100) مع احتساب طريقة الطبخ والزيت أو السمن المخفي.
 4) confidence رقم 0 إلى 100 يعكس ثقتك، و note ملاحظة قصيرة بالعربي عن التقدير.
 5) أسماء الأصناف بالعربي. إن لم تكن الصورة طعاماً أرجع items فارغة.
+6) كن متحفظاً ولا تبالغ في الأوزان: الرز المطبوخ في صحن عادي غالباً 150 إلى 250غ، وصدر الدجاج 100 إلى 200غ.
+${REF}
 ${hint ? 'ملاحظات المستخدم (لها الأولوية): ' + hint : ''}`;
   try { const r = await ai(prompt, lastImg, SCHEMA); showResults(r.items, $('pres'), analyzePhoto); }
   catch (e) { $('pres').innerHTML = errBox(e); }
@@ -495,6 +501,7 @@ async function analyzeText() {
   const prompt = `أنت حاسبة تغذية دقيقة تعتمد على بيانات USDA والمنتجات السعودية. حوّل هذا الوصف إلى أصناف منفصلة.
 لكل صنف: الوزن بالغرام (grams) كما ذكره المستخدم. إن لم يذكر وزناً افترض حصة معتادة وانبّه في note. الأطعمة تُعتبر مطبوخة ما لم يُذكر غير ذلك. ملعقة كبيرة = 15غ، ملعقة صغيرة = 5غ، كوب = 240مل.
 القيم الغذائية لكل 100 غرام (cal100, p100, c100, f100). أسماء الأصناف بالعربي. confidence من 0 إلى 100.
+${REF}
 الوصف: """${t}"""`;
   try { const r = await ai(prompt, null, SCHEMA); showResults(r.items, $('tres')); }
   catch (e) { $('tres').innerHTML = errBox(e); }
@@ -515,7 +522,7 @@ function filt(q) {
 }
 function pick(p) {
   cur = p; $('pc').classList.remove('hidden'); $('pc-b').textContent = p.brand || 'منتج'; $('pc-n').textContent = p.name;
-  $('pc-g').value = p.defaultG || 100; pupd(p.defaultG || 100); $('sbody').scrollTo({ top: 0, behavior: 'smooth' });
+  $('pc-g').value = p.defaultG || 100; pupd(p.defaultG || 100); $('sbody').scrollTo({ top: 0, behavior: 'smooth' }); return true;
 }
 function pupd(v) { if (!cur) return; const g = Math.max(1, +v || 100), r = g / 100; $('pc-m').innerHTML = macroCells(cur.cal * r, cur.p * r, cur.c * r, cur.f * r); }
 function pstep(d) { $('pc-g').value = Math.max(1, (+$('pc-g').value || 0) + d); pupd($('pc-g').value); }
@@ -526,9 +533,17 @@ function padd() {
 }
 const toProd = (it, brand) => ({ brand, name: it.name, cal: it.per.cal, p: it.per.p, c: it.per.c, f: it.per.f, defaultG: it.grams });
 
-async function look(code) {
+function eanOk(c) {
+  if (!/^\d{8,14}$/.test(c)) return false;
+  const d = c.split('').map(Number), k = d.pop(); let t = 0;
+  d.reverse().forEach((x, i) => t += x * (i % 2 ? 1 : 3));
+  return (10 - t % 10) % 10 === k;
+}
+const fmts = () => { const F = Html5QrcodeSupportedFormats; return [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128, F.CODE_39, F.ITF]; };
+async function look(code, quiet) {
   const c = (code || '').trim(); if (!c) return toast('اكتب الباركود أو اسم المنتج');
   if (/^\d{8,14}$/.test(c)) {
+    if (!eanOk(c)) return quiet ? false : toast('رقم الباركود غير صحيح. أعد التصوير أو اكتبه يدوياً');
     toast('أبحث في قاعدة الباركود...');
     try {
       const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${c}.json?fields=product_name,product_name_ar,brands,nutriments,serving_quantity`);
@@ -539,7 +554,7 @@ async function look(code) {
           cal: Math.round(kc), p: +n.proteins_100g || 0, c: +n.carbohydrates_100g || 0, f: +n.fat_100g || 0, defaultG: Math.round(d.product.serving_quantity) || 100 });
       }
     } catch (e) {}
-    return toast('الباركود غير مسجل. صوّر ملصق المنتج أو اكتب اسمه');
+    return quiet ? false : toast('الباركود غير مسجل. صوّر ملصق المنتج أو اكتب اسمه');
   }
   toast('أقدّر القيم بالذكاء الاصطناعي...');
   try {
@@ -551,21 +566,34 @@ async function look(code) {
 async function barPhoto(ev) {
   const f = ev.target.files?.[0]; if (!f) return; ev.target.value = '';
   toast('أقرأ الباركود...');
-  try { const sc = new Html5Qrcode('reader'); const txt = await sc.scanFile(f, false); try { sc.clear(); } catch (e) {} $('bq').value = txt; return look(txt); } catch (e) {}
-  try { // ما انقرأ الباركود: نقرأ ملصق المنتج بالذكاء الاصطناعي
-    const { b64 } = await compress(f);
-    const r = await ai('هذه صورة منتج غذائي. إن ظهر جدول القيم الغذائية فاستخدم أرقامه بالضبط محوّلة لكل 100 غرام، وإلا قدّر من نوع المنتج. أرجع صنفاً واحداً، grams هو وزن الحصة أو العبوة، والاسم بالعربي.', b64, SCHEMA);
-    if (!r.items?.length) throw new Error('لم أتعرف على المنتج');
-    pick(toProd(norm(r.items[0]), 'تقدير AI')); toast('تم التقدير من الملصق');
+  let code = null;
+  if (typeof Html5Qrcode !== 'undefined') {
+    const tries = [];
+    try { const c = await compress(f, 1600); const bl = await (await fetch(c.url)).blob(); tries.push(new File([bl], 'b.jpg', { type: 'image/jpeg' })); } catch (e) {}
+    tries.push(f);
+    for (const file of tries) {
+      try { const sc = new Html5Qrcode('scanfile', { formatsToSupport: fmts(), verbose: false }); code = await sc.scanFile(file, false); try { sc.clear(); } catch (e) {} if (code) break; } catch (e) {}
+    }
+  }
+  if (code) { $('bq').value = code; return look(code); }
+  try { // ما انقرأ الباركود: نقرأ الأرقام والملصق بالذكاء الاصطناعي
+    const { b64 } = await compress(f, 1280);
+    const r = await ai('هذه صورة منتج غذائي. 1) إن كانت أرقام الباركود مقروءة بوضوح اكتبها في barcode وإلا اتركها فارغة ولا تخمّنها. 2) إن ظهر جدول القيم الغذائية فاستخدم أرقامه بالضبط محوّلة لكل 100 غرام، وإلا قدّر من نوع المنتج. أرجع صنفاً واحداً، grams وزن الحصة أو العبوة، والاسم بالعربي.', b64, SCHEMA);
+    const it = r.items?.[0]; if (!it) throw new Error('لم أتعرف على المنتج');
+    const bc = String(it.barcode || '').replace(/\D/g, '');
+    if (eanOk(bc)) { $('bq').value = bc; if (await look(bc, true)) return; }
+    pick(toProd(norm(it), 'تقدير AI')); toast('تم التقدير من الصورة');
   } catch (e) { toast(errMsg(e)); }
 }
 async function startCam() {
-  $('camw').classList.remove('hidden');
+  if (typeof Html5Qrcode === 'undefined') return toast('مكتبة الباركود ما تحمّلت. تأكد من الإنترنت وأعد فتح الصفحة');
   try {
-    if (cam) await stopCam(); cam = new Html5Qrcode('reader');
-    await cam.start({ facingMode: 'environment' }, { fps: 12, qrbox: { width: 250, height: 130 } },
-      t => { stopCam(); $('bq').value = t; toast('تم التقاط: ' + t); look(t); }, () => {});
-  } catch (e) { $('camw').classList.add('hidden'); toast('الكاميرا ما فتحت. استخدم «صوّر الباركود»'); }
+    if (cam) await stopCam();
+    $('camw').classList.remove('hidden');
+    cam = new Html5Qrcode('reader', { formatsToSupport: fmts(), experimentalFeatures: { useBarCodeDetector: true }, verbose: false });
+    await cam.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 280, height: 150 }, videoConstraints: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } },
+      t => { if (/^(\d{8}|\d{12,13})$/.test(t) && !eanOk(t)) return; stopCam(); $('bq').value = t; toast('تم التقاط: ' + t); look(t); }, () => {});
+  } catch (e) { $('camw').classList.add('hidden'); cam = null; toast('الكاميرا ما فتحت. اسمح بها من إعدادات Safari أو استخدم «صوّر الباركود»'); }
 }
 async function stopCam() { $('camw').classList.add('hidden'); if (cam) { try { await cam.stop(); cam.clear(); } catch (e) {} cam = null; } }
 
