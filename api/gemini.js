@@ -14,11 +14,14 @@ module.exports = async (req, res) => {
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(25000)
     });
     const data = await r.json().catch(() => ({}));
     res.status(r.status).json(data);
   } catch (e) {
-    res.status(502).json({ error: { message: 'تعذر الاتصال بـ Google' } });
+    res.status(e.name === 'TimeoutError' ? 504 : 502).json({ error: { message: 'تعذر الاتصال بـ Google' } });
   }
 };
+
+module.exports.config = { maxDuration: 60 };
